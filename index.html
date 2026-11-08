@@ -2452,6 +2452,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     sendPacket({
       type: 'playerUpdate', id: _uid, x: pos.x, y: pos.y, z: pos.z, yaw: yawObj.rotation.y,
       color: myColor, skin: mySkin, hp: _0xV.getHp(), armor: _0xV.getArm(), playerScale: playerScale,
+      holdingWeapon: fingerModeIdx, holdingItem: selectedObj, isSwinging: (localArmSwing > 0.05),
       isShattered: isShatteredLocal, driving: !!drivingCar, portalPass: !!portalPass,
       rag: localRagdoll ? ragPose(localRagdoll) : undefined, marble: marbleMode,
       mq: [playerBody.quaternion.x, playerBody.quaternion.y, playerBody.quaternion.z, playerBody.quaternion.w]
@@ -2484,6 +2485,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
   function fireRaycast() {
     if (!isPlaying || isShatteredLocal) return;
+    triggerArmSwing();
     const mode = FINGER_MODES[fingerModeIdx];
     if (mode.cost > 0 && !_0xV.getAdm()) {
       if (_0xV.getAmmo() < mode.cost) {
@@ -2549,6 +2551,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
   function triggerSecondaryAction() {
     if (!isPlaying || isShatteredLocal) return;
+    triggerArmSwing();
     if (FINGER_MODES[fingerModeIdx].id === 'portal') placePortal(true);
     else if (FINGER_MODES[fingerModeIdx].id === 'gravity' && grabbedProp) grabbedProp = null;
     else spawnObject(selectedObj);
@@ -3122,7 +3125,9 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         localRig.root.visible = thirdPerson && !marbleMode;
         localRig.root.position.set(playerBody.position.x, playerBody.position.y - playerRadius, playerBody.position.z);
         localRig.root.rotation.y = yawObj.rotation.y;
-        animateMinecraftRig(localRig, moveSpd, dt, true);
+        if (localArmSwing > 0) localArmSwing = Math.max(0, localArmSwing - dt * 4.5);
+        updateRigHeldItems(localRig, FINGER_MODES[fingerModeIdx].id, selectedObj);
+        animateMinecraftRig(localRig, moveSpd, dt, localArmSwing);
 
         localPortalCloneRig.root.visible = false;
         setGroupClippingPlane(localRig.root, []);
@@ -3149,7 +3154,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
           const lookDir = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), yawObj.rotation.y);
           const outLook = transformVecBetweenPortals(lookDir, nearP, farP);
           localPortalCloneRig.root.rotation.y = Math.atan2(-outLook.x, -outLook.z);
-          animateMinecraftRig(localPortalCloneRig, moveSpd, dt, true);
+          updateRigHeldItems(localPortalCloneRig, FINGER_MODES[fingerModeIdx].id, selectedObj);
+          animateMinecraftRig(localPortalCloneRig, moveSpd, dt, localArmSwing);
           localPortalCloneRig.root.visible = true;
 
           if (normalDist <= 0.45 && movingIntoPortal && portalCooldown <= 0) seamlessTeleportPlayer(nearP, farP);
@@ -3260,7 +3266,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       if (rp.isShattered) { rp.body.position.set(0, -500, 0); syncBodyAABB(rp.body); continue; }
       rp.group.position.lerp(rp.targetPos, 0.25);
       const moveSpd = rp.group.position.distanceTo(rp.prevPos) / Math.max(dt, 0.001);
-      rp.prevPos.copy(rp.group.position); animateMinecraftRig(rp.rig, moveSpd, dt, true);
+      rp.prevPos.copy(rp.group.position);
+      if (rp.swingTimer > 0) rp.swingTimer = Math.max(0, rp.swingTimer - dt * 4.5);
+      const wId = (rp.holdingWeapon !== undefined && FINGER_MODES[rp.holdingWeapon]) ? FINGER_MODES[rp.holdingWeapon].id : 'portal';
+      updateRigHeldItems(rp.rig, wId, rp.holdingItem || 'ramp');
+      animateMinecraftRig(rp.rig, moveSpd, dt, rp.swingTimer || 0);
       const diff = rp.targetRotY - rp.group.rotation.y;
       rp.group.rotation.y += Math.atan2(Math.sin(diff), Math.cos(diff)) * 0.25;
       if (rp.driving) rp.body.position.set(0, -500, 0);
