@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>3D Multiplayer Physics Sandbox</title>
+<title>3D Multiplayer Physics Sandbox - Minecraft Edition</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
@@ -63,20 +63,44 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 .kb-btn{background:rgba(0,255,255,.12);border:1px solid rgba(0,255,255,.5);color:#67e8f9;padding:3px 10px;border-radius:6px;font-family:monospace;font-weight:bold;cursor:pointer;min-width:64px;text-align:center}
 .kb-btn.listening{background:#f59e0b;color:#000;border-color:#fff}
 #startScreen{z-index:9999;position:fixed;inset:0}
+.skin-preview-box{width:64px;height:64px;image-rendering:pixelated;border:2px solid #38bdf8;border-radius:6px;background:#1e293b}
 </style>
 </head>
 <body>
 <div id="startScreen" class="flex flex-col items-center justify-center bg-gray-950 no-select px-4 py-6">
-  <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500 mb-1 text-center tracking-tighter">PHYSICS SANDBOX</h1>
-  <p class="text-sm md:text-base text-fuchsia-300 mb-4 tracking-widest uppercase font-semibold text-center">Ayrı X/Y Portal Boyutu + Büyüme/Küçülme + Grafik Ayarları 🌀📏</p>
+  <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-fuchsia-500 mb-1 text-center tracking-tighter">MINECRAFT SANDBOX</h1>
+  <p class="text-sm md:text-base text-emerald-300 mb-3 tracking-widest uppercase font-semibold text-center">Bloklu Karakter + Özel Skin Yükleyici + Portallar 🟩⛏️</p>
 
-  <div class="w-96 max-w-full bg-black/80 border-2 border-cyan-500/50 rounded-xl p-3.5 mb-3">
+  <div class="w-96 max-w-full bg-black/80 border-2 border-emerald-500/50 rounded-xl p-3.5 mb-3">
     <div class="flex items-center justify-between mb-2.5">
-      <span class="text-xs uppercase tracking-wider text-cyan-300 font-bold">👤 Anonim Oyuncu Kimliği</span>
-      <span id="userAuthBadge" class="text-xs px-2.5 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono font-bold">Anon_0000</span>
+      <span class="text-xs uppercase tracking-wider text-emerald-300 font-bold">👤 Oyuncu Kimliği</span>
+      <span id="userAuthBadge" class="text-xs px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono font-bold">Steve_0000</span>
     </div>
 
-    <button id="anonLoginBtn" type="button" class="w-full flex items-center justify-center gap-2 py-2.5 px-3 bg-gray-800 hover:bg-gray-700 text-cyan-300 border border-cyan-500/40 font-bold rounded-lg text-xs cursor-pointer mb-2.5">
+    <!-- HIZLI SKİN SEÇİMİ VE YÜKLEME KUTUSU -->
+    <div class="bg-gray-900/90 border border-emerald-500/30 rounded-lg p-2.5 mb-2.5">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <canvas id="startSkinCanvas" class="skin-preview-box"></canvas>
+        <div class="flex-grow min-w-0">
+          <label class="text-[11px] font-bold text-gray-300 block mb-1">Minecraft Karakter Skini</label>
+          <select id="startSkinSelect" class="w-full bg-gray-950 border border-emerald-500/50 rounded p-1 text-xs text-white">
+            <option value="steve">🧑 Steve (Klasik)</option>
+            <option value="alex">👩 Alex</option>
+            <option value="zombie">🧟 Zombi</option>
+            <option value="creeper">💥 Creeper</option>
+            <option value="diamond">⚔️ Elmas Zırh</option>
+            <option value="skeleton">🏹 İskelet</option>
+            <option value="custom">📁 Özel Yüklenen Skin</option>
+          </select>
+        </div>
+      </div>
+      <label class="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 bg-emerald-800 hover:bg-emerald-700 text-white font-bold rounded text-xs cursor-pointer">
+        <span>📂</span> <span>Kendi Minecraft Skinini Yükle (.png)</span>
+        <input type="file" id="startSkinFileInput" accept="image/png" class="hidden">
+      </label>
+    </div>
+
+    <button id="anonLoginBtn" type="button" class="w-full flex items-center justify-center gap-2 py-2 px-3 bg-gray-800 hover:bg-gray-700 text-cyan-300 border border-cyan-500/40 font-bold rounded-lg text-xs cursor-pointer mb-2">
       <span>🎲</span> Yeni Anonim Kimlik Oluştur
     </button>
 
@@ -106,10 +130,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     <div id="savedServers" class="flex flex-wrap gap-2 w-full"></div>
   </div>
 
-  <p id="authStatus" class="text-gray-400 mb-4 font-mono text-xs text-center">Küçük portaldan büyük portala geçince büyürsünüz, büyükten küçüğe geçince küçülürsünüz!</p>
+  <p id="authStatus" class="text-gray-400 mb-3 font-mono text-xs text-center">Minecraft skinlerini doğrudan yükleyebilir ve portallarda devasa veya minik olabilirsiniz!</p>
 
   <div class="flex flex-wrap gap-3 justify-center">
-    <button id="playBtn" type="button" class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-full text-lg border-2 border-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.5)] cursor-pointer">ENTER PLAYGROUND</button>
+    <button id="playBtn" type="button" class="px-8 py-3.5 bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 text-white font-black rounded-full text-lg border-2 border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.5)] cursor-pointer">OYUNA BAŞLA</button>
     <button id="startMobileBtn" type="button" class="px-5 py-3.5 bg-emerald-800 hover:bg-emerald-700 text-emerald-200 font-bold rounded-full text-base border-2 border-emerald-400/50 cursor-pointer">📱 Mobil Mod</button>
     <button id="startFullscreenBtn" type="button" class="px-5 py-3.5 bg-gray-800 text-cyan-300 font-bold rounded-full text-base border-2 border-cyan-500/40 cursor-pointer">⛶ Tam Ekran</button>
   </div>
@@ -131,11 +155,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   <div class="flex gap-1.5">
     <button id="keybindsBtn" type="button" class="ui-btn icon-btn" title="Tuş Atamaları (K)">⌨️</button>
     <button id="fullscreenBtn" type="button" class="ui-btn icon-btn" title="Tam Ekran (F)">⛶</button>
-    <button id="settingsBtn" type="button" class="ui-btn icon-btn" title="Grafik & Oyun Ayarları">⚙️</button>
+    <button id="settingsBtn" type="button" class="ui-btn icon-btn" title="Grafik, Skin & Oyun Ayarları">⚙️</button>
   </div>
 </div>
 
-<!-- CAN, ZIRH, MERMİ VE KARAKTER BOYUTU BARLARI -->
 <div id="statusHud" class="no-select hidden">
   <div class="stat-pill" style="border-color:rgba(244,63,94,.7)">
     <div id="hpBarFill" class="stat-fill" style="background:linear-gradient(90deg,#ef4444,#22c55e)"></div>
@@ -151,21 +174,18 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
 <div id="vehiclePrompt" class="hidden no-select"></div>
 <div id="hudBar" class="no-select">
-  Kimlik: <b id="hudUserName" class="text-cyan-300">Anonim</b> · Boyutun: <b id="hudPlayerScale" class="text-purple-300">1.00x</b> · Portallar: <b id="hudPortalScale" class="text-orange-300">🔵1.5x1.5 | 🟠1.5x1.5</b> · Silah: <b id="hudWeaponName" class="text-amber-300">🌀 Portal Gun</b>
+  Kimlik: <b id="hudUserName" class="text-cyan-300">Steve</b> · Boyut: <b id="hudPlayerScale" class="text-purple-300">1.00x</b> · Portallar: <b id="hudPortalScale" class="text-orange-300">🔵1.5x1.5 | 🟠1.5x1.5</b> · Silah: <b id="hudWeaponName" class="text-amber-300">🌀 Portal Gun</b>
 </div>
 
-<!-- HER PORTAL İÇİN AYRI X / Y BÜYÜKLÜK AYARLAMA MODALI -->
 <div id="portalConfigModal" class="no-select">
   <div class="modal-header" style="color:#fb923c;border-color:rgba(249,115,22,.35)">
     <span>🌀 Ayrı Portal Boyutları (X &amp; Y)</span>
     <button id="closePortalConfigTop" type="button" class="text-xs text-gray-300 hover:text-white cursor-pointer">✕</button>
   </div>
-
   <p class="text-xs text-gray-300 mb-3 leading-relaxed">
-    Küçük bir portaldan büyük bir portala geçtiğinizde (veya eşya/araba attığınızda) <b class="text-amber-300">büyürsünüz</b>, büyükten küçüğe geçince <b class="text-cyan-300">küçülürsünüz</b>!
+    Küçük portaldan büyük portala geçtiğinizde <b class="text-amber-300">büyürsünüz</b>, büyükten küçüğe geçince <b class="text-cyan-300">küçülürsünüz</b>!
   </p>
 
-  <!-- MAVİ PORTAL X / Y -->
   <div class="bg-sky-950/50 border border-sky-500/40 rounded-lg p-3 mb-3">
     <div class="text-xs font-bold text-sky-300 mb-2 flex justify-between">
       <span>🔵 Mavi Portal Boyutu</span>
@@ -181,7 +201,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     </div>
   </div>
 
-  <!-- TURUNCU PORTAL X / Y -->
   <div class="bg-orange-950/50 border border-orange-500/40 rounded-lg p-3 mb-3">
     <div class="text-xs font-bold text-orange-300 mb-2 flex justify-between">
       <span>🟠 Turuncu Portal Boyutu</span>
@@ -197,7 +216,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     </div>
   </div>
 
-  <div class="text-xs font-bold text-purple-300 mb-1.5 uppercase">⚡ Hızlı Büyüme / Küçülme Şablonları</div>
   <div class="grid grid-cols-3 gap-1.5 mb-3">
     <button id="presetGrowBtn" type="button" class="py-1.5 px-2 bg-purple-800 hover:bg-purple-700 rounded text-[11px] font-bold cursor-pointer">🔵Küçük ➔ 🟠Dev</button>
     <button id="presetShrinkBtn" type="button" class="py-1.5 px-2 bg-indigo-800 hover:bg-indigo-700 rounded text-[11px] font-bold cursor-pointer">🔵Dev ➔ 🟠Küçük</button>
@@ -216,7 +234,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     <span id="adminBadge" class="text-xs px-2 py-0.5 rounded bg-emerald-800 text-emerald-200 font-bold">👑 Yetkili</span>
   </div>
 
-  <div class="text-xs font-bold text-yellow-300 mb-2 uppercase">⚡ Yetkili Güçleri</div>
   <div class="grid grid-cols-2 gap-2 mb-3">
     <button id="admGodBtn" type="button" class="py-2 bg-gray-800 hover:bg-gray-700 border border-yellow-500/40 rounded font-bold text-xs cursor-pointer">🛡️ Ölümsüzlük: KAPALI</button>
     <button id="admFlyBtn" type="button" class="py-2 bg-gray-800 hover:bg-gray-700 border border-cyan-500/40 rounded font-bold text-xs cursor-pointer">🕊️ Uçma (Fly): KAPALI</button>
@@ -227,7 +244,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   <div class="text-xs font-bold text-cyan-300 mb-2 uppercase">👥 Oyuncu Yönetimi</div>
   <div id="adminPlayerList" class="space-y-1.5 max-h-40 overflow-y-auto mb-3 bg-black/40 p-2 rounded border border-gray-800 text-xs"></div>
 
-  <div class="text-xs font-bold text-pink-300 mb-2 uppercase">🌍 Sunucu Komutları</div>
   <div class="grid grid-cols-2 gap-2 mb-3">
     <button id="admHealAllBtn" type="button" class="py-1.5 bg-teal-700 hover:bg-teal-600 rounded font-bold text-xs cursor-pointer">💚 Herkesi İyileştir</button>
     <button id="admKillAllBtn" type="button" class="py-1.5 bg-red-800 hover:bg-red-700 rounded font-bold text-xs cursor-pointer">💀 Herkesi Parçala</button>
@@ -236,13 +252,39 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     <input id="admAnnounceInput" type="text" placeholder="Sunucu duyuru mesajı..." class="flex-grow px-2 py-1.5 bg-gray-900 border border-gray-700 rounded text-xs">
     <button id="admAnnounceBtn" type="button" class="px-3 py-1.5 bg-pink-600 hover:bg-pink-500 rounded font-bold text-xs cursor-pointer">📢 Duyur</button>
   </div>
-
   <button id="closeAdminBtn" type="button" class="w-full py-2 bg-gray-700 hover:bg-gray-600 rounded font-bold text-sm cursor-pointer">Kapat</button>
 </div>
 
-<!-- GELİŞMİŞ GRAFİK VE OYUN AYARLARI MODALI -->
+<!-- AYARLAR & MINECRAFT SKİN YÜKLEYİCİ MODAL -->
 <div id="settingsModal" class="no-select">
-  <div class="modal-header"><span>⚙️ Grafik &amp; Oyun Ayarları</span><span id="fpsCounter" class="text-xs font-mono text-emerald-400">60 FPS</span></div>
+  <div class="modal-header"><span>⚙️ Ayarlar &amp; Minecraft Skin</span><span id="fpsCounter" class="text-xs font-mono text-emerald-400">60 FPS</span></div>
+
+  <!-- MINECRAFT SKİN AYARLARI -->
+  <div class="bg-emerald-950/40 border border-emerald-500/40 rounded-lg p-3 mb-3">
+    <div class="text-xs font-bold text-emerald-300 mb-2 uppercase flex items-center justify-between">
+      <span>🟩 Minecraft Karakter Modeli</span>
+      <span class="text-[10px] text-gray-400">64x64 PNG Desteği</span>
+    </div>
+    <div class="flex items-center gap-3 mb-2.5">
+      <canvas id="settingsSkinCanvas" class="skin-preview-box"></canvas>
+      <div class="flex-grow">
+        <label class="text-[11px] text-gray-300 block mb-1">Hazır Minecraft Kostümleri</label>
+        <select id="skinSelect" class="w-full bg-gray-900 border border-emerald-500/50 rounded p-1.5 text-xs text-white">
+          <option value="steve">🧑 Steve (Klasik)</option>
+          <option value="alex">👩 Alex</option>
+          <option value="zombie">🧟 Zombi</option>
+          <option value="creeper">💥 Creeper</option>
+          <option value="diamond">⚔️ Elmas Zırh</option>
+          <option value="skeleton">🏹 İskelet</option>
+          <option value="custom">📁 Özel Yüklenen Skin</option>
+        </select>
+      </div>
+    </div>
+    <label class="w-full flex items-center justify-center gap-2 py-2 px-3 bg-gradient-to-r from-emerald-700 to-teal-700 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-lg text-xs cursor-pointer border border-emerald-400/40">
+      <span>📥</span> <span>Minecraft Skin Dosyası (.png) Yükle</span>
+      <input type="file" id="skinFileInput" accept="image/png" class="hidden">
+    </label>
+  </div>
 
   <!-- GRAFİK AYARLARI BÖLÜMÜ -->
   <div class="bg-slate-900/90 border border-cyan-500/30 rounded-lg p-3 mb-3">
@@ -257,21 +299,12 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       </select>
     </div>
     <div class="setting-row">
-      <div class="setting-label"><span>Çözünürlük Ölçeği (Render Scale)</span><span id="resScaleVal">1.0x</span></div>
+      <div class="setting-label"><span>Çözünürlük Ölçeği</span><span id="resScaleVal">1.0x</span></div>
       <input type="range" id="resScaleSlider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-cyan-400">
     </div>
     <div class="setting-row">
       <div class="setting-label"><span>Çizim Mesafesi &amp; Sis</span><span id="drawDistVal">600m</span></div>
       <input type="range" id="drawDistSlider" min="200" max="1200" step="50" value="600" class="w-full accent-cyan-400">
-    </div>
-    <div class="setting-row">
-      <div class="setting-label"><span>Portal Kamera Kalitesi</span></div>
-      <select id="portalQualitySelect" class="w-full bg-gray-950 border border-cyan-500/40 rounded p-1.5 text-xs text-white">
-        <option value="256">Düşük (256px)</option>
-        <option value="512">Orta (512px)</option>
-        <option value="768" selected>Yüksek (768px)</option>
-        <option value="1024">Ultra (1024px)</option>
-      </select>
     </div>
     <div class="grid grid-cols-2 gap-1 text-xs mt-2">
       <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="shadowsToggle" checked class="w-4 h-4"><span>Gölgeler</span></label>
@@ -279,24 +312,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     </div>
   </div>
 
-  <!-- KARAKTER & KONTROL AYARLARI -->
-  <div class="setting-row flex items-center justify-between"><span class="text-xs font-semibold">Kıyafet &amp; Eldiven Rengi</span><input type="color" id="playerColorPicker" class="w-10 h-7 rounded cursor-pointer bg-transparent"></div>
-  <div class="setting-row">
-    <div class="setting-label"><span>Karakter Modeli</span></div>
-    <select id="skinSelect" class="w-full bg-gray-900 border border-cyan-500/50 rounded p-1.5 text-xs text-white">
-      <option value="default">🧑 Klasik Maceracı</option>
-      <option value="knight">🤖 Siber Şövalye (Neon Kule)</option>
-      <option value="astro">👩‍🚀 Astronot (Uçan Adalar)</option>
-      <option value="ninja">🥷 Neon Ninja (Gökdelenler)</option>
-      <option value="soldier">🪖 Taktik Asker (Yarış Pisti)</option>
-    </select>
-  </div>
   <div class="setting-row"><div class="setting-label"><span>Kamera Hassasiyeti</span><span id="sensVal">1.0x</span></div><input type="range" id="sensSlider" min="0.2" max="3" step="0.1" value="1" class="w-full accent-cyan-400"></div>
   <div class="setting-row"><div class="setting-label"><span>Görüş Açısı (FOV)</span><span id="fovVal">75°</span></div><input type="range" id="fovSlider" min="60" max="110" step="1" value="75" class="w-full accent-cyan-400"></div>
-  <label class="flex items-center space-x-3 cursor-pointer mb-1.5 text-xs"><input type="checkbox" id="mobileModeToggle" class="w-4 h-4"><span>📱 Mobil Modu Aktif Et (Dokunmatik Kontroller)</span></label>
+  <label class="flex items-center space-x-3 cursor-pointer mb-1.5 text-xs"><input type="checkbox" id="mobileModeToggle" class="w-4 h-4"><span>📱 Mobil Mod (Dokunmatik Kontroller)</span></label>
   <label class="flex items-center space-x-3 cursor-pointer mb-1.5 text-xs"><input type="checkbox" id="ragdollToggle" checked class="w-4 h-4"><span>Vurulunca Ragdoll</span></label>
-  <label class="flex items-center space-x-3 cursor-pointer mb-1.5 text-xs"><input type="checkbox" id="fingerGunToggle" checked class="w-4 h-4"><span>3B Silah/El Modelini Göster 👉</span></label>
-  <label class="flex items-center space-x-3 cursor-pointer mb-3 text-xs"><input type="checkbox" id="ghostToggle" checked class="w-4 h-4"><span>Obje Önizlemesi (Ghost)</span></label>
+  <label class="flex items-center space-x-3 cursor-pointer mb-3 text-xs"><input type="checkbox" id="fingerGunToggle" checked class="w-4 h-4"><span>3B Silah/El Modelini Göster 👉</span></label>
 
   <div class="grid grid-cols-2 gap-2 mb-2">
     <button id="openPortalCfgFromSettings" type="button" class="py-2 bg-orange-600 hover:bg-orange-500 rounded font-bold text-xs cursor-pointer">📏 Portal X/Y Ayarı</button>
@@ -326,7 +346,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   </div>
   <div class="text-xs font-bold text-cyan-300 mb-2 uppercase">📐 Rampalar &amp; Yapılar</div>
   <div id="buildGridStatic" class="grid grid-cols-2 gap-2 mb-3"></div>
-  <div class="text-xs font-bold text-amber-300 mb-2 uppercase">🎲 Fiziksel &amp; Rastgele Eşyalar</div>
+  <div class="text-xs font-bold text-amber-300 mb-2 uppercase">🎲 Fiziksel Eşyalar</div>
   <div id="buildGridDynamic" class="grid grid-cols-2 gap-2 mb-3"></div>
   <div class="flex gap-2 mb-2">
     <button id="spawnSelectedBtn" type="button" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 rounded font-bold text-xs cursor-pointer">➕ Seçileni Koy (Q)</button>
@@ -341,12 +361,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 </div>
 <div id="crosshair" class="hidden"></div>
 
-<!-- GELİŞMİŞ MOBİL MOD ARAYÜZÜ -->
 <div id="mobileControls" class="no-select">
   <div id="rightTouchZone"></div>
   <div id="joyLeft" class="joystick-zone"><div id="knobLeft" class="joystick-knob"></div></div>
   <div id="jumpBtnMobile" class="action-btn">⬆️<br>ZIPLA</div>
-  <div id="shootBtnMobile" class="action-btn">🔵<br>MAVİ/ATEŞ</div>
+  <div id="shootBtnMobile" class="action-btn">🔵<br>MAVİ</div>
   <div id="altShootBtnMobile" class="action-btn">🟠<br>TURUNCU</div>
   <div id="carBtnMobile" class="action-btn">🚗<br>E / BİN</div>
   <div id="ragBtnMobile" class="action-btn">🤸<br>RAG</div>
@@ -380,7 +399,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   const $ = (id) => _d.getElementById(id);
   _d.addEventListener('contextmenu', (e) => e.preventDefault());
 
-  let _uid = 'Anon_' + Math.random().toString(36).substring(2, 6);
+  let _uid = 'Steve_' + Math.random().toString(36).substring(2, 6);
   let _admPw = '';
   const _syncAnonUI = () => {
     $('userAuthBadge').textContent = '👤 ' + _uid;
@@ -389,14 +408,260 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   _syncAnonUI();
 
   $('anonLoginBtn').addEventListener('click', () => {
-    _uid = 'Anon_' + Math.random().toString(36).substring(2, 6);
+    _uid = 'Steve_' + Math.random().toString(36).substring(2, 6);
     _syncAnonUI();
   });
 
   const isTouchDevice = matchMedia('(pointer:coarse)').matches || ('ontouchstart' in _w);
   let mobileMode = isTouchDevice;
   let isPlaying = false, isShatteredLocal = false, ragdollEnabled = true, showGhost = true, showFingerGun = true, lookSensitivity = 1, invertY = false, thirdPerson = false;
-  let mySkin = 'default';
+
+  // MINECRAFT SKİN SİSTEMİ & CANVAS OLUŞTURUCU
+  let mySkin = 'steve';
+  let customSkinDataUrl = null;
+
+  // Standart Minecraft 64x64 Dokularını Oluşturan Piksel Jeneratörü
+  function generateMinecraftSkinCanvas(type, customImg = null) {
+    const cvs = _d.createElement('canvas');
+    cvs.width = 64; cvs.height = 64;
+    const ctx = cvs.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+
+    if (customImg) {
+      ctx.drawImage(customImg, 0, 0, 64, customImg.height === 32 ? 32 : 64);
+      if (customImg.height === 32) {
+        // 64x32 skin formatını 64x64'e genişlet (Sol kol ve bacağı kopyala)
+        ctx.drawImage(cvs, 0, 16, 16, 16, 16, 48, 16, 16);
+        ctx.drawImage(cvs, 40, 16, 16, 16, 32, 48, 16, 16);
+      }
+      return cvs;
+    }
+
+    // Renk paletleri
+    const palettes = {
+      steve: { skin: '#db9d75', hair: '#4a3219', eye: '#ffffff', pupil: '#2e43aa', shirt: '#00aaaa', pants: '#293594', shoes: '#545454' },
+      alex: { skin: '#e5a583', hair: '#d66224', eye: '#ffffff', pupil: '#1b7a37', shirt: '#5b8731', pants: '#4a3d31', shoes: '#504132' },
+      zombie: { skin: '#497536', hair: '#2a441f', eye: '#111111', pupil: '#111111', shirt: '#00aaaa', pants: '#293594', shoes: '#2a441f' },
+      creeper: { skin: '#51a136', hair: '#2f741b', eye: '#000000', pupil: '#000000', shirt: '#418b2b', pants: '#357523', shoes: '#215014' },
+      diamond: { skin: '#db9d75', hair: '#2cf5e2', eye: '#ffffff', pupil: '#008394', shirt: '#2cf5e2', pants: '#23c4b5', shoes: '#1aa396' },
+      skeleton: { skin: '#bcbcbc', hair: '#9c9c9c', eye: '#222222', pupil: '#111111', shirt: '#d4d4d4', pants: '#bcbcbc', shoes: '#888888' }
+    };
+    const pal = palettes[type] || palettes.steve;
+
+    // Arka planı ten rengiyle doldur
+    ctx.fillStyle = pal.skin;
+    ctx.fillRect(0, 0, 64, 64);
+
+    // Kafa Dokusu (0,0 - 32,16)
+    ctx.fillStyle = pal.hair;
+    ctx.fillRect(8, 0, 8, 8); // Kafa Üstü Saç
+    ctx.fillRect(0, 8, 32, 4); // Saç Bandı
+    ctx.fillStyle = pal.skin;
+    ctx.fillRect(8, 10, 8, 6); // Yüz
+    // Gözler
+    ctx.fillStyle = pal.eye;
+    ctx.fillRect(9, 12, 2, 1); ctx.fillRect(13, 12, 2, 1);
+    ctx.fillStyle = pal.pupil;
+    ctx.fillRect(10, 12, 1, 1); ctx.fillRect(13, 12, 1, 1);
+    // Burun / Ağız
+    ctx.fillStyle = '#8f4f34';
+    ctx.fillRect(11, 14, 2, 1);
+
+    // Gövde Dokusu (16,16 - 40,32)
+    ctx.fillStyle = pal.shirt;
+    ctx.fillRect(16, 16, 24, 16);
+    // Boyun yaka detayı
+    ctx.fillStyle = pal.skin;
+    ctx.fillRect(22, 20, 4, 3);
+
+    // Kollar (40,16 - 56,32 ve 32,48 - 48,64)
+    ctx.fillStyle = pal.shirt;
+    ctx.fillRect(40, 16, 16, 6);
+    ctx.fillRect(32, 48, 16, 6);
+    ctx.fillStyle = pal.skin;
+    ctx.fillRect(40, 22, 16, 10);
+    ctx.fillRect(32, 54, 16, 10);
+
+    // Bacaklar (0,16 - 16,32 ve 16,48 - 32,64)
+    ctx.fillStyle = pal.pants;
+    ctx.fillRect(0, 16, 16, 12);
+    ctx.fillRect(16, 48, 16, 12);
+    ctx.fillStyle = pal.shoes;
+    ctx.fillRect(0, 28, 16, 4);
+    ctx.fillRect(16, 60, 16, 4);
+
+    return cvs;
+  }
+
+  // Minecraft UV Koordinat Eşleyicisi (Three.js BoxGeometry için)
+  function applyMinecraftBoxUV(geometry, u, v, w, h, d, texW = 64, texH = 64) {
+    // Three.js BoxGeometry yüzleri: +x (Right), -x (Left), +y (Top), -y (Bottom), +z (Front), -z (Back)
+    const uvAttr = geometry.attributes.uv;
+    const uvArray = uvAttr.array;
+
+    const setFaceUV = (faceIdx, x0, y0, fw, fh) => {
+      const u0 = x0 / texW, v0 = 1 - (y0 + fh) / texH;
+      const u1 = (x0 + fw) / texH, v1 = 1 - y0 / texH;
+      const offset = faceIdx * 8;
+      // İki üçgen (4 köşe): [TL, BL, TR, BR]
+      uvArray[offset + 0] = u0; uvArray[offset + 1] = v1;
+      uvArray[offset + 2] = u0; uvArray[offset + 3] = v0;
+      uvArray[offset + 4] = u1; uvArray[offset + 5] = v1;
+      uvArray[offset + 6] = u1; uvArray[offset + 7] = v0;
+    };
+
+    // Right, Left, Top, Bottom, Front, Back
+    setFaceUV(0, u, v + d, d, h);                  // +X (Right)
+    setFaceUV(1, u + d + w, v + d, d, h);          // -X (Left)
+    setFaceUV(2, u + d, v, w, d);                  // +Y (Top)
+    setFaceUV(3, u + d + w, v, w, d);              // -Y (Bottom)
+    setFaceUV(4, u + d, v + d, w, h);              // +Z (Front)
+    setFaceUV(5, u + d + w + d, v + d, w, h);      // -Z (Back)
+
+    uvAttr.needsUpdate = true;
+  }
+
+  // Minecraft Bloklu Karakter Modeli Oluşturucu (Steve / Alex / Custom)
+  function buildMinecraftHumanoid(skinCanvas) {
+    const root = new THREE.Group();
+    const texture = new THREE.CanvasTexture(skinCanvas);
+    texture.magFilter = THREE.NearestFilter;
+    texture.minFilter = THREE.NearestMipmapNearestFilter;
+    const skinMat = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.85, metalness: 0.05, alphaTest: 0.1 });
+
+    // Kafa: 0.52 x 0.52 x 0.52 (8x8x8 orantılı kutu)
+    const headGeo = new THREE.BoxGeometry(0.52, 0.52, 0.52);
+    applyMinecraftBoxUV(headGeo, 0, 0, 8, 8, 8);
+    const headMesh = new THREE.Mesh(headGeo, skinMat);
+    headMesh.castShadow = true;
+    const headGroup = new THREE.Group();
+    headGroup.position.y = 1.95;
+    headGroup.add(headMesh);
+
+    // Kask / Şapka 2. Katman (Minecraft Hat Layer: 32,0)
+    const hatGeo = new THREE.BoxGeometry(0.56, 0.56, 0.56);
+    applyMinecraftBoxUV(hatGeo, 32, 0, 8, 8, 8);
+    const hatMat = new THREE.MeshStandardMaterial({ map: texture, transparent: true, alphaTest: 0.35, roughness: 0.85 });
+    const hatMesh = new THREE.Mesh(hatGeo, hatMat);
+    headGroup.add(hatMesh);
+    root.add(headGroup);
+
+    // Gövde (Torso): 0.52 x 0.78 x 0.26 (8x12x4 orantılı kutu)
+    const torsoGeo = new THREE.BoxGeometry(0.52, 0.78, 0.26);
+    applyMinecraftBoxUV(torsoGeo, 16, 16, 8, 12, 4);
+    const torsoMesh = new THREE.Mesh(torsoGeo, skinMat);
+    torsoMesh.castShadow = true;
+    torsoMesh.position.y = 1.30;
+    root.add(torsoMesh);
+
+    // Sol Kol (Left Arm)
+    const armL = new THREE.Group();
+    armL.position.set(-0.39, 1.62, 0);
+    const armLGeo = new THREE.BoxGeometry(0.24, 0.78, 0.24);
+    applyMinecraftBoxUV(armLGeo, 32, 48, 4, 12, 4);
+    const armLMesh = new THREE.Mesh(armLGeo, skinMat);
+    armLMesh.castShadow = true;
+    armLMesh.position.y = -0.34;
+    armL.add(armLMesh);
+    root.add(armL);
+
+    // Sağ Kol (Right Arm)
+    const armR = new THREE.Group();
+    armR.position.set(0.39, 1.62, 0);
+    const armRGeo = new THREE.BoxGeometry(0.24, 0.78, 0.24);
+    applyMinecraftBoxUV(armRGeo, 40, 16, 4, 12, 4);
+    const armRMesh = new THREE.Mesh(armRGeo, skinMat);
+    armRMesh.castShadow = true;
+    armRMesh.position.y = -0.34;
+    armR.add(armRMesh);
+    root.add(armR);
+
+    // Sol Bacak (Left Leg)
+    const legL = new THREE.Group();
+    legL.position.set(-0.14, 0.91, 0);
+    const legLGeo = new THREE.BoxGeometry(0.25, 0.78, 0.25);
+    applyMinecraftBoxUV(legLGeo, 16, 48, 4, 12, 4);
+    const legLMesh = new THREE.Mesh(legLGeo, skinMat);
+    legLMesh.castShadow = true;
+    legLMesh.position.y = -0.38;
+    legL.add(legLMesh);
+    root.add(legL);
+
+    // Sağ Bacak (Right Leg)
+    const legR = new THREE.Group();
+    legR.position.set(0.14, 0.91, 0);
+    const legRGeo = new THREE.BoxGeometry(0.25, 0.78, 0.25);
+    applyMinecraftBoxUV(legRGeo, 0, 16, 4, 12, 4);
+    const legRMesh = new THREE.Mesh(legRGeo, skinMat);
+    legRMesh.castShadow = true;
+    legRMesh.position.y = -0.38;
+    legR.add(legRMesh);
+    root.add(legR);
+
+    return { root, skinMat, headGroup, armL, armR, legL, legR, walkPhase: 0, texture };
+  }
+
+  function updateSkinPreviewCanvas(canvasId, skinCanvas) {
+    const c = $(canvasId);
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, c.width, c.height);
+    // Yüz önizlemesi (8,8 - 8x8 piksellerini büyüt)
+    ctx.drawImage(skinCanvas, 8, 8, 8, 8, 0, 0, c.width, c.height);
+  }
+
+  function loadCustomSkinFromFile(file) {
+    if (!file || !file.type.includes('png')) {
+      alert('Lütfen geçerli bir Minecraft PNG skin dosyası seçin!');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const cvs = generateMinecraftSkinCanvas('custom', img);
+        customSkinDataUrl = cvs.toDataURL('image/png');
+        mySkin = customSkinDataUrl;
+        $('skinSelect').value = 'custom';
+        $('startSkinSelect').value = 'custom';
+        updateSkinPreviewCanvas('settingsSkinCanvas', cvs);
+        updateSkinPreviewCanvas('startSkinCanvas', cvs);
+        rebuildLocalAvatar();
+        syncPlayerState(true);
+        appendChatMessage('SKİN', '#34d399', '✨ Yeni Minecraft skini başarıyla kuşanıldı!');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  $('skinFileInput').addEventListener('change', (e) => { if (e.target.files[0]) loadCustomSkinFromFile(e.target.files[0]); });
+  $('startSkinFileInput').addEventListener('change', (e) => { if (e.target.files[0]) loadCustomSkinFromFile(e.target.files[0]); });
+
+  function setSkinType(type) {
+    if (type === 'custom') {
+      if (customSkinDataUrl) mySkin = customSkinDataUrl;
+      else { $('skinFileInput').click(); return; }
+    } else {
+      mySkin = type;
+    }
+    $('skinSelect').value = type;
+    $('startSkinSelect').value = type;
+    const cvs = generateMinecraftSkinCanvas(type);
+    updateSkinPreviewCanvas('settingsSkinCanvas', cvs);
+    updateSkinPreviewCanvas('startSkinCanvas', cvs);
+    rebuildLocalAvatar();
+    syncPlayerState(true);
+  }
+
+  $('skinSelect').addEventListener('change', (e) => setSkinType(e.target.value));
+  $('startSkinSelect').addEventListener('change', (e) => setSkinType(e.target.value));
+
+  // İlk varsayılan Steve önizlemesi
+  const defaultSteveCanvas = generateMinecraftSkinCanvas('steve');
+  updateSkinPreviewCanvas('settingsSkinCanvas', defaultSteveCanvas);
+  updateSkinPreviewCanvas('startSkinCanvas', defaultSteveCanvas);
 
   // HER PORTAL İÇİN AYRI X VE Y BÜYÜKLÜKLERİ
   let blueScaleX = 1.5, blueScaleY = 1.5;
@@ -413,7 +678,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   const startScreen = $('startScreen'), serverIpInput = $('serverIpInput'), authStatus = $('authStatus');
   const crosshair = $('crosshair'), chatInput = $('chatInput'), chatMessages = $('chatMessages');
   const settingsModal = $('settingsModal'), keybindsModal = $('keybindsModal'), adminModal = $('adminModal'), portalConfigModal = $('portalConfigModal'), buildMenu = $('buildMenu'), vehiclePrompt = $('vehiclePrompt');
-  $('playerColorPicker').value = myColor;
 
   function setMobileMode(enabled) {
     mobileMode = Boolean(enabled);
@@ -422,9 +686,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     $('mobileModeBtn').style.borderColor = mobileMode ? '#22c55e' : '#10b981';
     $('mobileModeToggle').checked = mobileMode;
     $('startMobileBtn').textContent = mobileMode ? '📱 Mobil Mod: AÇIK' : '📱 Mobil Mod: KAPALI';
-    if (mobileMode && _d.pointerLockElement) {
-      _d.exitPointerLock();
-    }
+    if (mobileMode && _d.pointerLockElement) _d.exitPointerLock();
   }
   setMobileMode(isTouchDevice);
 
@@ -432,7 +694,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   $('startMobileBtn').addEventListener('click', () => setMobileMode(!mobileMode));
   $('mobileModeToggle').addEventListener('change', (e) => setMobileMode(e.target.checked));
 
-  // ANA MENÜYE DÖNME FONKSİYONU
   function returnToMainMenu() {
     isPlaying = false;
     if (_d.pointerLockElement) _d.exitPointerLock();
@@ -464,9 +725,9 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   }
 
   const RAG_DEFS = {
-    torso: [[1.2, 0.9, 0.6], [0, 1.25, 0], 5], head: [[0.7, 0.7, 0.7], [0, 2.05, 0], 1.5],
-    armL: [[0.3, 0.9, 0.3], [-0.75, 1.15, 0], 1], armR: [[0.3, 0.9, 0.3], [0.75, 1.15, 0], 1],
-    legL: [[0.5, 0.8, 0.5], [-0.3, 0.4, 0], 1.5], legR: [[0.5, 0.8, 0.5], [0.3, 0.4, 0], 1.5]
+    torso: [[0.55, 0.8, 0.3], [0, 1.3, 0], 5], head: [[0.52, 0.52, 0.52], [0, 1.95, 0], 2],
+    armL: [[0.25, 0.8, 0.25], [-0.4, 1.3, 0], 1.2], armR: [[0.25, 0.8, 0.25], [0.4, 1.3, 0], 1.2],
+    legL: [[0.26, 0.8, 0.26], [-0.15, 0.5, 0], 1.5], legR: [[0.26, 0.8, 0.26], [0.15, 0.5, 0], 1.5]
   };
   let localRagdoll = null, ragdollStart = 0, ragdollTimer = null;
   const r2 = (v, k) => Math.round(v * k) / k;
@@ -480,11 +741,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     fullscreen: 'f', keybinds: 'k'
   };
   const KEY_LABELS = {
-    forward: 'İleri Hareket / Gaz', backward: 'Geri Hareket / Fren', left: 'Sola Dönüş', right: 'Sağa Dönüş',
-    jump: 'Zıpla / El Freni', interactCar: 'Silah Al / Araca Bin / Kostüm (E)', ragdoll: 'Ragdoll / Aracı Düzelt',
-    camView: '1./3. Şahıs Kamera', adminMenu: '👑 Admin Menüsü (Sadece Yetkili)',
+    forward: 'İleri / Gaz', backward: 'Geri / Fren', left: 'Sola Dönüş', right: 'Sağa Dönüş',
+    jump: 'Zıpla / El Freni', interactCar: 'Kostüm / Bin / İn (E)', ragdoll: 'Ragdoll (R)',
+    camView: '1./3. Şahıs Kamera', adminMenu: '👑 Admin Menüsü',
     buildMenu: 'Obje Menüsü', quickSpawn: 'Seçili Objeyi Koy / Turuncu Portal', randomSpawn: '🎲 Rastgele Eşya At',
-    fingerMode: '🔫 Silah / Parmak Modu Değiştir (V)', rotateObj: 'Objeyi 45° Döndür', deleteObj: 'Baktığın Objeyi Sil',
+    fingerMode: '🌀 Silah / Portal Modu', rotateObj: 'Objeyi Döndür', deleteObj: 'Baktığın Objeyi Sil',
     marble: 'Marble Modu', fullscreen: 'Tam Ekran', keybinds: 'Tuş Atamaları'
   };
   let keybinds = Object.assign({}, DEFAULT_KEYS);
@@ -572,84 +833,34 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   const flashLight = new THREE.PointLight(0xffff00, 0, 10);
   flashLight.position.set(0, 0, -1); pitchObj.add(flashLight);
 
-  const SKIN_PRESETS = {
-    default: { label: 'Klasik Maceracı', visor: 0x111827, pants: 0x1e293b, helmet: false },
-    knight:  { label: '🤖 Siber Şövalye', visor: 0x00ffff, pants: 0x0f172a, helmet: true,  fixedCloth: '#0ea5e9' },
-    astro:   { label: '👩‍🚀 Astronot',     visor: 0xfacc15, pants: 0xf8fafc, helmet: true,  backpackBig: true, fixedCloth: '#f1f5f9' },
-    ninja:   { label: '🥷 Neon Ninja',   visor: 0xf43f5e, pants: 0x090d16, helmet: true,  fixedCloth: '#18181b' },
-    soldier: { label: '🪖 Taktik Asker', visor: 0x22c55e, pants: 0x365314, helmet: true,  backpackBig: true, fixedCloth: '#4d7c0f' }
-  };
-
-  function buildRealisticHumanoid(colorHex, skinKey = 'default') {
-    const preset = SKIN_PRESETS[skinKey] || SKIN_PRESETS.default;
-    const root = new THREE.Group();
-    const clothColor = preset.fixedCloth || colorHex;
-    const clothMat = new THREE.MeshStandardMaterial({ color: clothColor, roughness: 0.45, metalness: preset.helmet ? 0.35 : 0.1 });
-    const skinToneMat = new THREE.MeshStandardMaterial({ color: 0xffcba4, roughness: 0.55 });
-    const pantsMat = new THREE.MeshStandardMaterial({ color: preset.pants, roughness: 0.6 });
-    const darkMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 });
-    const visorMat = new THREE.MeshBasicMaterial({ color: preset.visor });
-
-    const pelvis = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.26, 0.38), pantsMat); pelvis.position.y = 0.95; root.add(pelvis);
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.82, 0.42), clothMat); torso.position.y = 1.48; root.add(torso);
-    const vest = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.48, 0.46), darkMat); vest.position.set(0, 1.54, 0); root.add(vest);
-    const coreGlow = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.48), visorMat); coreGlow.position.set(0, 1.58, 0); root.add(coreGlow);
-    const pack = new THREE.Mesh(new THREE.BoxGeometry(preset.backpackBig ? 0.58 : 0.46, preset.backpackBig ? 0.65 : 0.48, 0.24), darkMat); pack.position.set(0, 1.52, 0.32); root.add(pack);
-    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.18, 12), skinToneMat); neck.position.y = 1.96; root.add(neck);
-
-    const headGroup = new THREE.Group(); headGroup.position.y = 2.24;
-    const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.29, 18, 16), preset.helmet ? clothMat : skinToneMat); headMesh.scale.set(1, 1.08, 1); headGroup.add(headMesh);
-    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.13, 0.16), visorMat); visor.position.set(0, 0.03, -0.22); headGroup.add(visor);
-    const hair = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.16, 0.52), preset.helmet ? visorMat : darkMat); hair.position.set(0, 0.24, 0); headGroup.add(hair);
-    root.add(headGroup);
-
-    const makeArm = (isRight) => {
-      const pivot = new THREE.Group(); pivot.position.set(isRight ? 0.52 : -0.52, 1.82, 0);
-      pivot.add(new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 10), clothMat));
-      const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.1, 0.42, 10), clothMat); upper.position.y = -0.22; pivot.add(upper);
-      const lower = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.085, 0.38, 10), skinToneMat); lower.position.y = -0.58; pivot.add(lower);
-      const hand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), skinToneMat); hand.position.y = -0.8; pivot.add(hand);
-      root.add(pivot); return pivot;
-    };
-    const armL = makeArm(false), armR = makeArm(true);
-
-    const makeLeg = (isRight) => {
-      const pivot = new THREE.Group(); pivot.position.set(isRight ? 0.21 : -0.21, 0.88, 0);
-      const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.12, 0.46, 10), pantsMat); thigh.position.y = -0.23; pivot.add(thigh);
-      const calf = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.095, 0.44, 10), pantsMat); calf.position.y = -0.64; pivot.add(calf);
-      const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.36), darkMat); shoe.position.set(0, -0.84, -0.06); pivot.add(shoe);
-      root.add(pivot); return pivot;
-    };
-    const legL = makeLeg(false), legR = makeLeg(true);
-    return { root, clothMat, visorMat, headGroup, armL, armR, legL, legR, walkPhase: 0 };
-  }
-
-  function animateHumanoidRig(rig, speed, dt, isAiming = true) {
+  // Minecraft Humanoid Rig Yürüme Animasyonu
+  function animateMinecraftRig(rig, speed, dt, isAiming = true) {
     if (speed > 0.3) rig.walkPhase += dt * Math.min(speed * 0.9, 12);
     else rig.walkPhase = 0;
-    const swing = speed > 0.3 ? Math.sin(rig.walkPhase) * 0.65 : 0;
+    const swing = speed > 0.3 ? Math.sin(rig.walkPhase) * 0.75 : 0;
     rig.legL.rotation.x = swing; rig.legR.rotation.x = -swing;
-    rig.armL.rotation.x = -swing * 0.8; rig.armR.rotation.x = isAiming ? 1.35 : swing * 0.8;
+    rig.armL.rotation.x = -swing * 0.9;
+    rig.armR.rotation.x = isAiming ? -1.35 : swing * 0.9;
   }
 
   function setGroupClippingPlane(groupObj, planeList) {
     groupObj.traverse((child) => {
-      if (child.isMesh && child.material) {
-        child.material.clippingPlanes = planeList;
-      }
+      if (child.isMesh && child.material) child.material.clippingPlanes = planeList;
     });
   }
 
-  let localRig = buildRealisticHumanoid(myColor, mySkin);
+  // Yerel Minecraft Karakter Modelleri
+  let localRig = buildMinecraftHumanoid(defaultSteveCanvas);
   localRig.root.visible = false; scene.add(localRig.root);
-  let localPortalCloneRig = buildRealisticHumanoid(myColor, mySkin);
+  let localPortalCloneRig = buildMinecraftHumanoid(defaultSteveCanvas);
   localPortalCloneRig.root.visible = false; scene.add(localPortalCloneRig.root);
 
   function rebuildLocalAvatar() {
     scene.remove(localRig.root);
     scene.remove(localPortalCloneRig.root);
-    localRig = buildRealisticHumanoid(myColor, mySkin);
-    localPortalCloneRig = buildRealisticHumanoid(myColor, mySkin);
+    const skinCvs = (mySkin && mySkin.startsWith('data:')) ? generateMinecraftSkinCanvas('custom', (() => { const im = new Image(); im.src = mySkin; return im; })()) : generateMinecraftSkinCanvas(mySkin);
+    localRig = buildMinecraftHumanoid(skinCvs);
+    localPortalCloneRig = buildMinecraftHumanoid(skinCvs);
     localRig.root.scale.set(playerScale, playerScale, playerScale);
     localPortalCloneRig.root.scale.set(playerScale, playerScale, playerScale);
     localRig.root.visible = thirdPerson && !drivingCar && !marbleMode && !isShatteredLocal;
@@ -664,18 +875,19 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   }
   $('camViewBtn').addEventListener('click', (e) => { e.currentTarget.blur(); toggleCameraView(); });
 
+  // Haritadaki Minecraft Statü Heykelleri
   const mapStatues = [];
   (function() {
     const spots = [
-      { skin: 'knight',  x: 0,    y: 10,  z: 0,    title: '🤖 Siber Şövalye (Neon Kule)' },
-      { skin: 'astro',   x: 0,    y: 40,  z: -228, title: '👩‍🚀 Astronot (Uçan Adalar Zirvesi)' },
-      { skin: 'ninja',   x: 20,   y: 31,  z: 110,  title: '🥷 Neon Ninja (Gökdelen Çatısı)' },
-      { skin: 'soldier', x: -130, y: 3.5, z: 100,  title: '🪖 Taktik Asker (Yarış Pisti)' }
+      { skin: 'diamond', x: 0,    y: 10,  z: 0,    title: '⚔️ Elmas Zırh (Neon Kule)' },
+      { skin: 'alex',    x: 0,    y: 40,  z: -228, title: '👩 Alex (Uçan Adalar Zirvesi)' },
+      { skin: 'zombie',  x: 20,   y: 31,  z: 110,  title: '🧟 Zombi (Gökdelen Çatısı)' },
+      { skin: 'creeper', x: -130, y: 3.5, z: 100,  title: '💥 Creeper (Yarış Pisti)' }
     ];
     spots.forEach((s) => {
       const pad = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.7, 0.3, 20), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
       pad.position.set(s.x, s.y + 0.15, s.z); scene.add(pad);
-      const rig = buildRealisticHumanoid('#00ffff', s.skin);
+      const rig = buildMinecraftHumanoid(generateMinecraftSkinCanvas(s.skin));
       rig.root.position.set(s.x, s.y + 0.3, s.z); scene.add(rig.root);
       mapStatues.push({ ...s, rig, pad });
     });
@@ -690,7 +902,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     return best;
   }
 
-  // ================= SİLAH MODLARI =================
+  // SİLAH MODLARI
   const FINGER_MODES = [
     { id: 'portal',  name: '🌀 Portal Gun (Sol: Mavi | Sağ/Q: Turuncu)', btn: '🌀 Mod: Portal',  color: 0x38bdf8, force: 15, dmg: 0,  cost: 0, unlocked: true },
     { id: 'gravity', name: '🧲 Gravity Gun (Sol: Tut/At | E: Bırak)',    btn: '🧲 Mod: Gravity', color: 0xf97316, force: 36, dmg: 10, cost: 0, unlocked: true },
@@ -811,20 +1023,20 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   portalGunSubModel.visible = true;
   fingerGunGroup.add(handSubGroup, gravityGunSubModel, portalGunSubModel);
 
-  const skinMat = new THREE.MeshStandardMaterial({ color: 0xffcba4, roughness: 0.55 });
-  const cuffMat = new THREE.MeshStandardMaterial({ color: myColor, roughness: 0.35, metalness: 0.2 });
+  const skinMat = new THREE.MeshStandardMaterial({ color: 0xdb9d75, roughness: 0.85 });
+  const cuffMat = new THREE.MeshStandardMaterial({ color: 0x00aaaa, roughness: 0.85 });
   const tipGlowMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
   let thumbPivot = null;
   const fingerTipLocalPos = new THREE.Vector3(0, 0.04, -0.34);
 
   (function() {
-    const cuff = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.14, 0.18), cuffMat); cuff.position.set(0, -0.02, 0.14); handSubGroup.add(cuff);
-    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.14, 0.18), skinMat); handSubGroup.add(palm);
-    const indexFinger = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.045, 0.24), skinMat); indexFinger.position.set(-0.03, 0.04, -0.18); handSubGroup.add(indexFinger);
+    const cuff = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.22), cuffMat); cuff.position.set(0, -0.02, 0.14); handSubGroup.add(cuff);
+    const palm = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.2), skinMat); handSubGroup.add(palm);
+    const indexFinger = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.24), skinMat); indexFinger.position.set(-0.03, 0.04, -0.18); handSubGroup.add(indexFinger);
     thumbPivot = new THREE.Object3D(); thumbPivot.position.set(-0.04, 0.06, -0.02);
-    const thumbMesh = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.11, 0.045), skinMat); thumbMesh.position.set(0, 0.04, 0); thumbMesh.rotation.x = 0.25;
+    const thumbMesh = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.11, 0.05), skinMat); thumbMesh.position.set(0, 0.04, 0); thumbMesh.rotation.x = 0.25;
     thumbPivot.add(thumbMesh); handSubGroup.add(thumbPivot);
-    const tipRing = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 10), tipGlowMat); tipRing.position.set(-0.03, 0.04, -0.31); handSubGroup.add(tipRing);
+    const tipRing = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 8), tipGlowMat); tipRing.position.set(-0.03, 0.04, -0.31); handSubGroup.add(tipRing);
     fingerGunGroup.position.set(0.32, -0.26, -0.48); fingerGunGroup.rotation.set(0.05, -0.12, 0);
     camera.add(fingerGunGroup);
   })();
@@ -869,7 +1081,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   }
   $('fingerModeBtn').addEventListener('click', (e) => { e.currentTarget.blur(); cycleFingerMode(); });
 
-  // ================= HARİTA BLOKLARI VE PORTAL DUVAR PHASING DESTEĞİ =================
+  // HARİTA VE STATİK BLOKLAR
   const intersectableObjects = [];
   const staticMapEntries = [];
 
@@ -962,26 +1174,20 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   })();
 
   function findClosestWallBody(pos, norm, wallIdx = -1, propId = null) {
-    if (wallIdx >= 0 && staticMapEntries[wallIdx] && !staticMapEntries[wallIdx].isFloor) {
-      return staticMapEntries[wallIdx].body;
-    }
-    if (propId && activeProps[propId]) {
-      return activeProps[propId].body;
-    }
+    if (wallIdx >= 0 && staticMapEntries[wallIdx] && !staticMapEntries[wallIdx].isFloor) return staticMapEntries[wallIdx].body;
+    if (propId && activeProps[propId]) return activeProps[propId].body;
     const probeStart = pos.clone().addScaledVector(norm, 0.35);
     const probeDir = norm.clone().negate();
     const rc = new THREE.Raycaster(probeStart, probeDir, 0, 1.5);
     const hit = rc.intersectObjects(intersectableObjects, false)[0];
     if (hit && hit.object.userData) {
       const wIdx = hit.object.userData.wallIdx;
-      if (wIdx !== undefined && wIdx >= 0 && staticMapEntries[wIdx] && !staticMapEntries[wIdx].isFloor) {
-        return staticMapEntries[wIdx].body;
-      }
+      if (wIdx !== undefined && wIdx >= 0 && staticMapEntries[wIdx] && !staticMapEntries[wIdx].isFloor) return staticMapEntries[wIdx].body;
     }
     return null;
   }
 
-  // ================= HER OYUNCU İÇİN AYRI X/Y BOYUTLU PORTAL SİSTEMİ =================
+  // PORTAL SİSTEMİ (Ayrı X/Y & Boyut Orantısı)
   let portalCooldown = 0;
   let portalRes = isTouchDevice ? 384 : 768;
   const playerPortals = {};
@@ -995,10 +1201,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const cam = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.05, 600);
     const g = new THREE.Group();
 
-    const border = new THREE.Mesh(
-      new THREE.TorusGeometry(1.45, 0.14, 16, 40),
-      new THREE.MeshBasicMaterial({ color: hexColor })
-    );
+    const border = new THREE.Mesh(new THREE.TorusGeometry(1.45, 0.14, 16, 40), new THREE.MeshBasicMaterial({ color: hexColor }));
     border.scale.set(0.92, 1.42, 1);
     g.add(border);
 
@@ -1041,10 +1244,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     inner.scale.set(0.92, 1.42, 1);
     g.add(inner);
 
-    const tunnel = new THREE.Mesh(
-      new THREE.CylinderGeometry(1.41, 1.41, 0.55, 32, 1, true),
-      new THREE.MeshBasicMaterial({ color: hexColor, side: THREE.BackSide, transparent: true, opacity: 0.45 })
-    );
+    const tunnel = new THREE.Mesh(new THREE.CylinderGeometry(1.41, 1.41, 0.55, 32, 1, true), new THREE.MeshBasicMaterial({ color: hexColor, side: THREE.BackSide, transparent: true, opacity: 0.45 }));
     tunnel.rotation.x = Math.PI / 2;
     tunnel.scale.set(0.92, 1.42, 1);
     tunnel.position.z = -0.22;
@@ -1140,15 +1340,13 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   function syncMyPortalDimensions(broadcastChange = true) {
     updatePortalDimensionUI();
     const pair = getOrCreatePlayerPortalPair(_uid);
-    pair.blue.scaleX = blueScaleX;
-    pair.blue.scaleY = blueScaleY;
-    pair.blue.scale  = getPortalEffectiveScale(pair.blue);
+    pair.blue.scaleX = blueScaleX; pair.blue.scaleY = blueScaleY;
+    pair.blue.scale = getPortalEffectiveScale(pair.blue);
     pair.blue.group.scale.set(blueScaleX, blueScaleY, 1.0);
     pair.blue.group.updateMatrixWorld();
 
-    pair.orange.scaleX = orangeScaleX;
-    pair.orange.scaleY = orangeScaleY;
-    pair.orange.scale  = getPortalEffectiveScale(pair.orange);
+    pair.orange.scaleX = orangeScaleX; pair.orange.scaleY = orangeScaleY;
+    pair.orange.scale = getPortalEffectiveScale(pair.orange);
     pair.orange.group.scale.set(orangeScaleX, orangeScaleY, 1.0);
     pair.orange.group.updateMatrixWorld();
 
@@ -1208,7 +1406,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     syncMyPortalDimensions(true);
   });
 
-  // Yerel oyuncunun kendi başlangıç portallarını kur
   (function initMyDefaultPortals() {
     const myPair = getOrCreatePlayerPortalPair(_uid);
     applyPortalTransform(myPair.blue, -8.28, 4.8, -6, 1, 0, 0, 2, null, blueScaleX, blueScaleY);
@@ -1261,7 +1458,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   const _pCamQuat = new THREE.Quaternion();
   const _pRotY180 = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
 
-  // X ve Y eksenlerini ayrı oranlayarak noktayı bir portaldan diğerine dönüştürür
   function transformPointBetweenPortals(worldPt, srcP, dstP) {
     const rel = worldPt.clone().sub(srcP.pos);
     const srcInvQ = srcP.group.quaternion.clone().invert();
@@ -1328,9 +1524,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
     const relFromDst = virtualPos.clone().sub(dstPortal.pos);
     const normalOffset = relFromDst.dot(dstPortal.normal);
-    if (normalOffset < 0.08) {
-      virtualPos.addScaledVector(dstPortal.normal, 0.08 - normalOffset);
-    }
+    if (normalOffset < 0.08) virtualPos.addScaledVector(dstPortal.normal, 0.08 - normalOffset);
 
     pCam.position.copy(virtualPos);
     pCam.quaternion.copy(virtualQuat);
@@ -1361,7 +1555,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     setTimeout(() => { scene.remove(line); geo.dispose(); mat.dispose(); }, 90);
   }
 
-  // ================= GRAFİK AYARLARI İŞLEYİCİLERİ =================
+  // GRAFİK AYARLARI
   function resizeAllPortalTargets(newRes) {
     portalRes = newRes;
     for (const ownerId in playerPortals) {
@@ -1380,7 +1574,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       mapPointLights.forEach((l) => (l.visible = false)); $('pointLightsToggle').checked = false;
       camera.far = 350; camera.updateProjectionMatrix(); scene.fog.density = 0.008;
       $('drawDistSlider').value = 350; $('drawDistVal').textContent = '350m';
-      $('portalQualitySelect').value = '256'; resizeAllPortalTargets(256);
+      resizeAllPortalTargets(256);
     } else if (preset === 'medium') {
       renderer.setPixelRatio(1.0);
       $('resScaleSlider').value = 1.0; $('resScaleVal').textContent = '1.0x';
@@ -1388,7 +1582,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       mapPointLights.forEach((l) => (l.visible = true)); $('pointLightsToggle').checked = true;
       camera.far = 550; camera.updateProjectionMatrix(); scene.fog.density = 0.0055;
       $('drawDistSlider').value = 550; $('drawDistVal').textContent = '550m';
-      $('portalQualitySelect').value = '512'; resizeAllPortalTargets(512);
+      resizeAllPortalTargets(512);
     } else if (preset === 'high') {
       const pr = Math.min(devicePixelRatio, 1.5);
       renderer.setPixelRatio(pr);
@@ -1399,7 +1593,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       mapPointLights.forEach((l) => (l.visible = true)); $('pointLightsToggle').checked = true;
       camera.far = 750; camera.updateProjectionMatrix(); scene.fog.density = 0.004;
       $('drawDistSlider').value = 750; $('drawDistVal').textContent = '750m';
-      $('portalQualitySelect').value = '768'; resizeAllPortalTargets(768);
+      resizeAllPortalTargets(768);
     } else if (preset === 'ultra') {
       const pr = Math.min(devicePixelRatio, 2.0);
       renderer.setPixelRatio(pr);
@@ -1410,7 +1604,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       mapPointLights.forEach((l) => (l.visible = true)); $('pointLightsToggle').checked = true;
       camera.far = 1100; camera.updateProjectionMatrix(); scene.fog.density = 0.0022;
       $('drawDistSlider').value = 1100; $('drawDistVal').textContent = '1100m';
-      $('portalQualitySelect').value = '1024'; resizeAllPortalTargets(1024);
+      resizeAllPortalTargets(1024);
     }
     scene.traverse((o) => { if (o.material) o.material.needsUpdate = true; });
   }
@@ -1427,7 +1621,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     scene.fog.density = Math.max(0.0015, 2.7 / d);
     $('drawDistVal').textContent = d + 'm';
   });
-  $('portalQualitySelect').addEventListener('change', (e) => resizeAllPortalTargets(parseInt(e.target.value, 10)));
   $('pointLightsToggle').addEventListener('change', (e) => {
     mapPointLights.forEach((l) => (l.visible = e.target.checked));
   });
@@ -1437,15 +1630,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     if (settingsModal.style.display === 'block' && _d.pointerLockElement) _d.exitPointerLock();
   });
   $('closeSettingsBtn').addEventListener('click', () => (settingsModal.style.display = 'none'));
-  $('playerColorPicker').addEventListener('input', (e) => {
-    myColor = e.target.value; cuffMat.color.set(myColor); rebuildLocalAvatar(); setLocalMarbleColor(); syncPlayerState(true);
-  });
-  $('skinSelect').addEventListener('change', (e) => { mySkin = e.target.value; rebuildLocalAvatar(); syncPlayerState(true); });
   $('sensSlider').addEventListener('input', (e) => { lookSensitivity = +e.target.value; $('sensVal').innerText = lookSensitivity.toFixed(1) + 'x'; });
   $('fovSlider').addEventListener('input', (e) => { camera.fov = +e.target.value; camera.updateProjectionMatrix(); $('fovVal').innerText = e.target.value + '°'; });
   $('ragdollToggle').addEventListener('change', (e) => (ragdollEnabled = e.target.checked));
   $('fingerGunToggle').addEventListener('change', (e) => { showFingerGun = e.target.checked; });
-  $('ghostToggle').addEventListener('change', (e) => { showGhost = e.target.checked; if (!showGhost) ghostMesh.visible = false; });
   $('shadowsToggle').addEventListener('change', (e) => {
     renderer.shadowMap.enabled = e.target.checked; moonLight.castShadow = e.target.checked;
     scene.traverse((o) => { if (o.material) o.material.needsUpdate = true; });
@@ -1459,12 +1647,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   });
 
   function syncAdminButtonVisibility() {
-    if (_0xV.getAdm()) {
-      $('adminBtn').classList.remove('hidden');
-    } else {
-      $('adminBtn').classList.add('hidden');
-      adminModal.style.display = 'none';
-    }
+    if (_0xV.getAdm()) $('adminBtn').classList.remove('hidden');
+    else { $('adminBtn').classList.add('hidden'); adminModal.style.display = 'none'; }
   }
 
   function renderAdminModal() {
@@ -1542,7 +1726,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     if (t) { sendPacket({ type: 'adminAction', action: 'announce', text: t }); $('admAnnounceInput').value = ''; }
   });
 
-  // ================= OYUNCU FİZİĞİ VE BÜYÜME/KÜÇÜLME SİSTEMİ =================
+  // OYUNCU FİZİĞİ & BÜYÜME/KÜÇÜLME SİSTEMİ
   const playerBody = new CANNON.Body({ mass: 5, material: playerMat, linearDamping: 0.01, allowSleep: false });
   playerBody.addShape(new CANNON.Sphere(playerRadius));
   playerBody.position.set(0, 15, 8);
@@ -1607,9 +1791,9 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     x.fillStyle = color; x.fillRect(0, 0, 256, 128);
     return new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(c), roughness: 0.12, metalness: 0.35 });
   }
-  const marbleMesh = new THREE.Mesh(marbleGeo, makeMarbleMat(myColor));
+  const marbleMesh = new THREE.Mesh(marbleGeo, makeMarbleMat('#00aaaa'));
   marbleMesh.castShadow = true; marbleMesh.visible = false; scene.add(marbleMesh);
-  function setLocalMarbleColor() { marbleMesh.material.map.dispose(); marbleMesh.material.dispose(); marbleMesh.material = makeMarbleMat(myColor); }
+  function setLocalMarbleColor() { marbleMesh.material.map.dispose(); marbleMesh.material.dispose(); marbleMesh.material = makeMarbleMat('#00aaaa'); }
   function applyCameraRig() {
     if (marbleMode) { camera.position.set(0, 1.5 * playerScale, 7 * playerScale); pitchObj.position.set(0, 0.3 * playerScale, 0); }
     else if (thirdPerson) { camera.position.set(0, 1.1 * playerScale, 4.8 * playerScale); pitchObj.position.set(0, 1.35 * playerScale, 0); }
@@ -1736,7 +1920,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     if (grabbedProp) { grabbedProp = null; return; }
     const st = findNearestStatue();
     if (st) {
-      mySkin = st.skin; $('skinSelect').value = mySkin; rebuildLocalAvatar(); syncPlayerState(true);
+      setSkinType(st.skin);
       appendChatMessage('KOSTÜM', '#34d399', `${st.title} kuşanıldı!`);
       return;
     }
@@ -1754,7 +1938,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     car.tp.set(d.x, d.y, d.z); if (d.qx !== undefined) car.tq.set(d.qx, d.qy, d.qz, d.qw);
   }
 
-  // ZENGİN EŞYA LİSTESİ (27 Farklı Obje)
+  // OBJE TANIMLARI
   const PROP_TYPES = {
     ramp:       { s: 'box',  h: [4, 0.5, 7],       m: 0, tilt: 0.28, lift: 1.45, i: '📐', l: 'Rampa' },
     steepRamp:  { s: 'box',  h: [4, 0.5, 7],       m: 0, tilt: 0.48, lift: 2.65, i: '🚀', l: 'Dik Rampa' },
@@ -1861,7 +2045,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     activeProps[id] = p; return p;
   }
 
-  // EŞYALARIN PORTALDAN GEÇERKEN BÜYÜYÜP KÜÇÜLMESİNİ UYGULAYAN FONKSİYON
   function applyPropScaleFactor(p, newFactor) {
     if (!p || p.isStatic) return;
     const sf = Math.max(0.25, Math.min(4.5, newFactor));
@@ -2014,14 +2197,15 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   $('localServerBtn').addEventListener('click', () => { serverIpInput.value = '127.0.0.1:3000'; });
   try { const ls = localStorage.getItem('lastServer'); if (ls) serverIpInput.value = ls; } catch (e) {}
   renderServers();
-  function setStatus(t, cls) { authStatus.innerText = t; authStatus.className = cls + ' mb-4 font-mono text-xs text-center'; }
+  function setStatus(t, cls) { authStatus.innerText = t; authStatus.className = cls + ' mb-3 font-mono text-xs text-center'; }
 
   function sendJoinPayload() {
     const startPw = $('startAdminPassInput') ? $('startAdminPassInput').value.trim() : '';
     if (startPw) _admPw = startPw;
     sendPacket({
       type: 'join', id: _uid, adminPass: _admPw,
-      color: myColor, skin: mySkin, x: playerBody.position.x, y: playerBody.position.y, z: playerBody.position.z, yaw: yawObj.rotation.y
+      color: myColor, skin: mySkin, playerScale: playerScale,
+      x: playerBody.position.x, y: playerBody.position.y, z: playerBody.position.z, yaw: yawObj.rotation.y
     });
   }
 
@@ -2097,8 +2281,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         if (msg.scale && msg.ownerId) {
           const pair = getOrCreatePlayerPortalPair(msg.ownerId);
           [pair.blue, pair.orange].forEach((p) => {
-            p.scaleX = msg.scale; p.scaleY = msg.scale; p.scale = msg.scale;
-            p.group.scale.set(msg.scale, msg.scale, 1.0);
+            p.scaleX = msg.scaleX || msg.scale;
+            p.scaleY = msg.scaleY || msg.scale;
+            p.scale = getPortalEffectiveScale(p);
+            p.group.scale.set(p.scaleX, p.scaleY, 1.0);
             p.group.updateMatrixWorld();
           });
         }
@@ -2109,6 +2295,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         if (p && p.body && !p.isStatic) {
           p.body.wakeUp();
           p.body.position.set(msg.x, msg.y, msg.z);
+          if (msg.scaleFactor !== undefined) applyPropScaleFactor(p, msg.scaleFactor);
           if (msg.vx !== undefined) p.body.velocity.set(msg.vx, msg.vy, msg.vz);
           if (msg.qx !== undefined) p.body.quaternion.set(msg.qx, msg.qy, msg.qz, msg.qw);
           p.portalCd = 0.25;
@@ -2120,6 +2307,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         if (c && c !== drivingCar) {
           c.body.position.set(msg.x, msg.y, msg.z);
           c.tp.set(msg.x, msg.y, msg.z);
+          if (msg.scaleFactor !== undefined) {
+            c.scaleFactor = msg.scaleFactor;
+            c.group.scale.set(c.scaleFactor, c.scaleFactor, c.scaleFactor);
+          }
           if (msg.qx !== undefined) {
             c.body.quaternion.set(msg.qx, msg.qy, msg.qz, msg.qw);
             c.tq.set(msg.qx, msg.qy, msg.qz, msg.qw);
@@ -2162,9 +2353,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       case 'clearProps': Object.keys(activeProps).forEach(removeProp); break;
       case 'impulseProp': {
         const p = activeProps[msg.id];
-        if (p && p.body && !p.isStatic) {
-          applyControlledPush(p.body, msg.fx || 0, msg.fy || 0, msg.fz || 0);
-        }
+        if (p && p.body && !p.isStatic) applyControlledPush(p.body, msg.fx || 0, msg.fy || 0, msg.fz || 0);
         break;
       }
       case 'spawnCar':
@@ -2196,38 +2385,48 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     np.tex.needsUpdate = true;
   }
 
-  function createRemotePlayer(id, colorHex, skinKey = 'default') {
+  // Uzak Oyuncular İçin Minecraft Bloklu Modeli
+  function createRemotePlayer(id, skinKey = 'steve') {
     const group = new THREE.Group();
-    const rig = buildRealisticHumanoid(colorHex, skinKey); group.add(rig.root);
+    const skinCvs = (skinKey && skinKey.startsWith('data:')) ? generateMinecraftSkinCanvas('custom', (() => { const im = new Image(); im.src = skinKey; return im; })()) : generateMinecraftSkinCanvas(skinKey);
+    const rig = buildMinecraftHumanoid(skinCvs); group.add(rig.root);
     const np = makeNameplateSprite(); drawNameplate(np, id, 100, false); group.add(np.sprite);
     const hitMesh = new THREE.Mesh(new THREE.BoxGeometry(1.3, 2.6, 1.3), new THREE.MeshBasicMaterial({ visible: false }));
     hitMesh.position.y = 1.3; hitMesh.userData = { isPlayer: true, playerId: id }; group.add(hitMesh);
     scene.add(group); intersectableObjects.push(hitMesh);
     const kb = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC, material: pm });
     kb.addShape(new CANNON.Sphere(BASE_PLAYER_RADIUS)); kb.position.set(0, -500, 0); world.addBody(kb);
-    const marbleM = new THREE.Mesh(marbleGeo, makeMarbleMat(colorHex)); marbleM.castShadow = true; marbleM.visible = false; scene.add(marbleM);
+    const marbleM = new THREE.Mesh(marbleGeo, makeMarbleMat('#00aaaa')); marbleM.castShadow = true; marbleM.visible = false; scene.add(marbleM);
     return {
       id, body: kb, driving: false, group, rig, np, hitMesh, marbleMesh: marbleM,
       mq: new THREE.Quaternion(), targetPos: new THREE.Vector3(0, 10, 0), prevPos: new THREE.Vector3(0, 10, 0),
-      targetRotY: 0, isShattered: false, baseColor: colorHex, skin: skinKey, hp: 100, isAdmin: false
+      targetRotY: 0, isShattered: false, skin: skinKey, hp: 100, isAdmin: false, remoteScale: 1.0
     };
   }
 
   function updateOrCreateRemotePlayer(d) {
-    if (!remotePlayers[d.id]) remotePlayers[d.id] = createRemotePlayer(d.id, isHex(d.color) ? d.color : '#ffffff', d.skin || 'default');
+    if (!remotePlayers[d.id]) remotePlayers[d.id] = createRemotePlayer(d.id, d.skin || 'steve');
     const rp = remotePlayers[d.id];
-    const newSkin = d.skin || 'default';
-    if ((isHex(d.color) && d.color !== rp.baseColor) || newSkin !== rp.skin) {
-      rp.baseColor = isHex(d.color) ? d.color : rp.baseColor; rp.skin = newSkin;
-      rp.group.remove(rp.rig.root); rp.rig = buildRealisticHumanoid(rp.baseColor, rp.skin); rp.group.add(rp.rig.root);
+    const newSkin = d.skin || 'steve';
+    if (newSkin !== rp.skin) {
+      rp.skin = newSkin;
+      rp.group.remove(rp.rig.root);
+      const skinCvs = (newSkin && newSkin.startsWith('data:')) ? generateMinecraftSkinCanvas('custom', (() => { const im = new Image(); im.src = newSkin; return im; })()) : generateMinecraftSkinCanvas(newSkin);
+      rp.rig = buildMinecraftHumanoid(skinCvs);
+      rp.group.add(rp.rig.root);
     }
     const newHp = d.hp !== undefined ? d.hp : 100;
     const newAdm = !!d.isAdmin;
     if (newHp !== rp.hp || newAdm !== rp.isAdmin) {
-      rp.hp = newHp; rp.isAdmin = newAdm; drawNameplate(np, d.id, rp.hp, rp.isAdmin);
+      rp.hp = newHp; rp.isAdmin = newAdm; drawNameplate(rp.np, d.id, rp.hp, rp.isAdmin);
       if (adminModal.style.display === 'block') renderAdminModal();
     }
-    rp.targetPos.set(d.x, d.y - BASE_PLAYER_RADIUS, d.z); rp.targetRotY = d.yaw || 0;
+    if (d.playerScale !== undefined && d.playerScale !== rp.remoteScale) {
+      rp.remoteScale = d.playerScale;
+      rp.rig.root.scale.set(d.playerScale, d.playerScale, d.playerScale);
+      rp.np.sprite.position.y = 2.85 * d.playerScale;
+    }
+    rp.targetPos.set(d.x, d.y - BASE_PLAYER_RADIUS * (rp.remoteScale || 1), d.z); rp.targetRotY = d.yaw || 0;
     rp.isShattered = !!d.isShattered;
     const m = !!d.marble; rp.driving = !!d.driving;
     if (d.mq) rp.mq.set(d.mq[0], d.mq[1], d.mq[2], d.mq[3]);
@@ -2252,8 +2451,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const pos = drivingCar ? drivingCar.body.position : (localRagdoll ? localRagdoll.torso.position : playerBody.position);
     sendPacket({
       type: 'playerUpdate', id: _uid, x: pos.x, y: pos.y, z: pos.z, yaw: yawObj.rotation.y,
-      color: myColor, skin: mySkin, hp: _0xV.getHp(), armor: _0xV.getArm(), isShattered: isShatteredLocal, driving: !!drivingCar,
-      portalPass: !!portalPass,
+      color: myColor, skin: mySkin, hp: _0xV.getHp(), armor: _0xV.getArm(), playerScale: playerScale,
+      isShattered: isShatteredLocal, driving: !!drivingCar, portalPass: !!portalPass,
       rag: localRagdoll ? ragPose(localRagdoll) : undefined, marble: marbleMode,
       mq: [playerBody.quaternion.x, playerBody.quaternion.y, playerBody.quaternion.z, playerBody.quaternion.w]
     });
@@ -2286,7 +2485,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   function fireRaycast() {
     if (!isPlaying || isShatteredLocal) return;
     const mode = FINGER_MODES[fingerModeIdx];
-
     if (mode.cost > 0 && !_0xV.getAdm()) {
       if (_0xV.getAmmo() < mode.cost) {
         appendChatMessage('SİLAH', '#ef4444', '🔋 Merminiz (Ammo) bitti! Haritadaki sarı mermi kutularını toplayın.');
@@ -2299,10 +2497,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     flashLight.color.setHex(mode.color); flashLight.intensity = 2.5;
     setTimeout(() => (flashLight.intensity = 0), 55);
 
-    if (mode.id === 'portal') {
-      placePortal(false);
-      return;
-    }
+    if (mode.id === 'portal') { placePortal(false); return; }
 
     const aim = new THREE.Vector3(); camera.getWorldDirection(aim);
     const startBeam = fingerTipLocalPos.clone(); fingerGunGroup.localToWorld(startBeam);
@@ -2321,7 +2516,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
     raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
     const hit = raycaster.intersectObjects(intersectableObjects, true).find((x) => !(x.object.userData.isPlayer && !x.object.visible) && x.object !== ghostMesh);
-
     const endBeam = hit ? hit.point.clone() : playerObj.position.clone().addScaledVector(aim, 60);
     spawnLaserBeam(startBeam, endBeam, mode.color);
 
@@ -2336,24 +2530,16 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     let obj = hit.object; while (obj.parent && !obj.userData.isProp && !obj.userData.isCar && !obj.userData.isPlayer) obj = obj.parent;
     const point = hit.point; createSpark(point, mode.color);
 
-    if (mode.id === 'gravity') {
-      if (obj.userData && obj.userData.isProp) {
-        const p = activeProps[obj.userData.id];
-        if (p && !p.isStatic) {
-          grabbedProp = p;
-          grabDistance = Math.max(3.5, Math.min(14, hit.distance));
-          return;
-        }
-      }
+    if (mode.id === 'gravity' && obj.userData && obj.userData.isProp) {
+      const p = activeProps[obj.userData.id];
+      if (p && !p.isStatic) { grabbedProp = p; grabDistance = Math.max(3.5, Math.min(14, hit.distance)); return; }
     }
 
     if (obj.userData && obj.userData.isProp) {
       const f = mode.force;
       const pk = { type: 'impulseProp', id: obj.userData.id, fx: aim.x * f, fy: aim.y * f + (mode.id === 'force' ? 8 : 3), fz: aim.z * f };
       const p = activeProps[obj.userData.id];
-      if (p && p.body && !p.isStatic) {
-        applyControlledPush(p.body, pk.fx, pk.fy, pk.fz);
-      }
+      if (p && p.body && !p.isStatic) applyControlledPush(p.body, pk.fx, pk.fy, pk.fz);
       if (isConnected) sendPacket(pk);
     } else if (obj.userData && obj.userData.isPlayer) {
       const mult = mode.id === 'force' ? 2.2 : 1;
@@ -2370,7 +2556,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
   const ragdolls = [];
   function spawnRagdoll(base, yaw, color, dir, life, extra) {
-    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.6 });
+    const mat = new THREE.MeshStandardMaterial({ color: 0xdb9d75, roughness: 0.85 });
     const sy = Math.sin(yaw), cy = Math.cos(yaw);
     const P = {}, parts = [];
     for (const k in RAG_DEFS) {
@@ -2388,11 +2574,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     }
     const V = (a, b, c) => new CANNON.Vec3(a * playerScale, b * playerScale, c * playerScale);
     const cons = [
-      new CANNON.PointToPointConstraint(P.torso, V(0, 0.45, 0), P.head, V(0, -0.35, 0)),
-      new CANNON.PointToPointConstraint(P.torso, V(-0.75, 0.35, 0), P.armL, V(0, 0.45, 0)),
-      new CANNON.PointToPointConstraint(P.torso, V(0.75, 0.35, 0), P.armR, V(0, 0.45, 0)),
-      new CANNON.PointToPointConstraint(P.torso, V(-0.3, -0.45, 0), P.legL, V(0, 0.4, 0)),
-      new CANNON.PointToPointConstraint(P.torso, V(0.3, -0.45, 0), P.legR, V(0, 0.4, 0))
+      new CANNON.PointToPointConstraint(P.torso, V(0, 0.4, 0), P.head, V(0, -0.26, 0)),
+      new CANNON.PointToPointConstraint(P.torso, V(-0.35, 0.35, 0), P.armL, V(0, 0.35, 0)),
+      new CANNON.PointToPointConstraint(P.torso, V(0.35, 0.35, 0), P.armR, V(0, 0.35, 0)),
+      new CANNON.PointToPointConstraint(P.torso, V(-0.15, -0.4, 0), P.legL, V(0, 0.35, 0)),
+      new CANNON.PointToPointConstraint(P.torso, V(0.15, -0.4, 0), P.legR, V(0, 0.35, 0))
     ];
     cons.forEach((c) => { c.collideConnected = false; world.addConstraint(c); });
     const r = { parts, cons, mat, torso: P.torso, life, portalCd: 0 }; ragdolls.push(r); return r;
@@ -2511,7 +2697,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     if (k === keybinds.jump) activeActions.jump = false;
   });
 
-  // ================= MOBİL MOD: DOKUNMATİK VE FARE SÜRÜKLEME KONTROLLERİ =================
+  // MOBİL DOKUNMATİK KONTROLLER
   let joyMove = { x: 0, y: 0 };
   const leftZone = $('joyLeft'), leftKnob = $('knobLeft');
   let leftTouchId = null, leftMouseActive = false, leftCenter = { x: 0, y: 0 };
@@ -2603,7 +2789,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   const clock = new THREE.Clock();
   let frames = 0, fpsTimer = 0;
 
-  // ELİPTİK (X ve Y AYRI) PORTAL AÇIKLIĞI KONTROLÜ
   function isInsidePortalAperture(pt, portal, radiusPad = 0.75) {
     if (!portal || !portal.active) return false;
     const sx = portal.scaleX || portal.scale || 1.5;
@@ -2620,7 +2805,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     return normEllipse <= 1.0;
   }
 
-  // OYUNCU PORTALDAN GEÇERKEN BÜYÜME / KÜÇÜLME VE IŞINLANMA
   function seamlessTeleportPlayer(srcPortal, dstPortal) {
     const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
     setPlayerScaleFactor(playerScale * scaleRatio);
@@ -2631,9 +2815,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const relFromDst = newPos.clone().sub(dstPortal.pos);
     const nDist = relFromDst.dot(dstPortal.normal);
     const minClearance = Math.max(0.55, playerRadius * 0.85);
-    if (nDist < minClearance) {
-      newPos.addScaledVector(dstPortal.normal, minClearance - nDist);
-    }
+    if (nDist < minClearance) newPos.addScaledVector(dstPortal.normal, minClearance - nDist);
 
     playerBody.position.set(newPos.x, newPos.y, newPos.z);
     playerObj.position.copy(playerBody.position);
@@ -2641,22 +2823,17 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const curVel = new THREE.Vector3(playerBody.velocity.x, playerBody.velocity.y, playerBody.velocity.z);
     const outVel = transformVecBetweenPortals(curVel, srcPortal, dstPortal).multiplyScalar(Math.max(0.65, Math.min(1.8, scaleRatio)));
     const minOutSpd = Math.max(8, curVel.length());
-    if (outVel.dot(dstPortal.normal) < 4) {
-      outVel.addScaledVector(dstPortal.normal, minOutSpd * 0.6);
-    }
+    if (outVel.dot(dstPortal.normal) < 4) outVel.addScaledVector(dstPortal.normal, minOutSpd * 0.6);
     playerBody.velocity.set(outVel.x, outVel.y, outVel.z);
 
     const lookDir = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), yawObj.rotation.y);
     const newLookDir = transformVecBetweenPortals(lookDir, srcPortal, dstPortal);
-    if (Math.hypot(newLookDir.x, newLookDir.z) > 0.01) {
-      yawObj.rotation.y = Math.atan2(-newLookDir.x, -newLookDir.z);
-    }
+    if (Math.hypot(newLookDir.x, newLookDir.z) > 0.01) yawObj.rotation.y = Math.atan2(-newLookDir.x, -newLookDir.z);
 
     portalCooldown = 0.25;
     syncPlayerState(true, true);
   }
 
-  // EŞYALAR PORTALDAN GEÇERKEN BÜYÜME / KÜÇÜLME VE IŞINLANMA
   function seamlessTeleportProp(p, srcPortal, dstPortal) {
     if (grabbedProp === p) grabbedProp = null;
     const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
@@ -2667,9 +2844,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const outPos = transformPointBetweenPortals(curPos, srcPortal, dstPortal);
     const relFromDst = outPos.clone().sub(dstPortal.pos);
     const nDist = relFromDst.dot(dstPortal.normal);
-    if (nDist < p.boundR + 0.35) {
-      outPos.addScaledVector(dstPortal.normal, (p.boundR + 0.35) - nDist);
-    }
+    if (nDist < p.boundR + 0.35) outPos.addScaledVector(dstPortal.normal, (p.boundR + 0.35) - nDist);
 
     const inVel = new THREE.Vector3(b.velocity.x, b.velocity.y, b.velocity.z);
     const outVel = transformVecBetweenPortals(inVel, srcPortal, dstPortal);
@@ -2691,13 +2866,13 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         type: 'teleportProp',
         id: p.id,
         x: outPos.x, y: outPos.y, z: outPos.z,
+        scaleFactor: p.scaleFactor || 1.0,
         vx: outVel.x, vy: outVel.y, vz: outVel.z,
         qx: outQ.x, qy: outQ.y, qz: outQ.z, qw: outQ.w
       });
     }
   }
 
-  // ARABALAR PORTALDAN GEÇERKEN BÜYÜME / KÜÇÜLME VE IŞINLANMA
   function seamlessTeleportCar(car, srcPortal, dstPortal) {
     const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
     car.scaleFactor = Math.max(0.4, Math.min(3.0, (car.scaleFactor || 1.0) * scaleRatio));
@@ -2710,9 +2885,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const relFromDst = outPos.clone().sub(dstPortal.pos);
     const nDist = relFromDst.dot(dstPortal.normal);
     const pad = 2.8 * car.scaleFactor;
-    if (nDist < pad) {
-      outPos.addScaledVector(dstPortal.normal, pad - nDist);
-    }
+    if (nDist < pad) outPos.addScaledVector(dstPortal.normal, pad - nDist);
 
     const inVel = new THREE.Vector3(b.velocity.x, b.velocity.y, b.velocity.z);
     const outVel = transformVecBetweenPortals(inVel, srcPortal, dstPortal);
@@ -2737,9 +2910,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       pitchObj.position.set(0, 2.5 * car.scaleFactor, 2.2 * car.scaleFactor);
       const lookDir = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), yawObj.rotation.y);
       const newLookDir = transformVecBetweenPortals(lookDir, srcPortal, dstPortal);
-      if (Math.hypot(newLookDir.x, newLookDir.z) > 0.01) {
-        yawObj.rotation.y = Math.atan2(-newLookDir.x, -newLookDir.z);
-      }
+      if (Math.hypot(newLookDir.x, newLookDir.z) > 0.01) yawObj.rotation.y = Math.atan2(-newLookDir.x, -newLookDir.z);
       sendCarState(car);
       syncPlayerState(true, true);
     } else if (isConnected) {
@@ -2747,6 +2918,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         type: 'teleportCar',
         id: car.id,
         x: b.position.x, y: b.position.y, z: b.position.z,
+        scaleFactor: car.scaleFactor || 1.0,
         vx: outVel.x, vy: outVel.y, vz: outVel.z,
         qx: outQ.x, qy: outQ.y, qz: outQ.z, qw: outQ.w
       });
@@ -2755,16 +2927,12 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
   function seamlessTeleportRagdoll(rag, srcPortal, dstPortal) {
     const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
-    if (rag === localRagdoll) {
-      setPlayerScaleFactor(playerScale * scaleRatio);
-    }
+    if (rag === localRagdoll) setPlayerScaleFactor(playerScale * scaleRatio);
     const torsoPos = new THREE.Vector3(rag.torso.position.x, rag.torso.position.y, rag.torso.position.z);
     const outTorsoPos = transformPointBetweenPortals(torsoPos, srcPortal, dstPortal);
     const relFromDst = outTorsoPos.clone().sub(dstPortal.pos);
     const nDist = relFromDst.dot(dstPortal.normal);
-    if (nDist < 1.1) {
-      outTorsoPos.addScaledVector(dstPortal.normal, 1.1 - nDist);
-    }
+    if (nDist < 1.1) outTorsoPos.addScaledVector(dstPortal.normal, 1.1 - nDist);
 
     rag.parts.forEach((p) => {
       p.mesh.scale.multiplyScalar(scaleRatio);
@@ -2775,11 +2943,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         (p.body.position.z - torsoPos.z) * scaleRatio
       );
       const rotOffset = transformVecBetweenPortals(partOffset, srcPortal, dstPortal);
-      p.body.position.set(
-        outTorsoPos.x + rotOffset.x,
-        outTorsoPos.y + rotOffset.y,
-        outTorsoPos.z + rotOffset.z
-      );
+      p.body.position.set(outTorsoPos.x + rotOffset.x, outTorsoPos.y + rotOffset.y, outTorsoPos.z + rotOffset.z);
 
       const inVel = new THREE.Vector3(p.body.velocity.x, p.body.velocity.y, p.body.velocity.z);
       const outVel = transformVecBetweenPortals(inVel, srcPortal, dstPortal);
@@ -2794,9 +2958,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     });
 
     rag.portalCd = 0.38;
-    if (rag === localRagdoll) {
-      syncPlayerState(true, true);
-    }
+    if (rag === localRagdoll) syncPlayerState(true, true);
   }
 
   function animate() {
@@ -2813,9 +2975,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       if (!pk.active) return;
       pk.model.rotation.y += dt * 1.6;
       pk.model.position.y = pk.y + 1.15 + Math.sin(clock.elapsedTime * 2.8) * 0.16;
-      if (isPlaying && !isShatteredLocal && playerBody.position.distanceTo(pk.model.position) < 2.3 * Math.max(1, playerScale)) {
-        collectPickupItem(pk);
-      }
+      if (isPlaying && !isShatteredLocal && playerBody.position.distanceTo(pk.model.position) < 2.3 * Math.max(1, playerScale)) collectPickupItem(pk);
     });
 
     if (grabbedProp && grabbedProp.body && !grabbedProp.isStatic) {
@@ -2866,9 +3026,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         mv.normalize();
         mv.applyAxisAngle(new THREE.Vector3(0, 1, 0), yawObj.rotation.y);
         walkBobTimer += dt * 9 * spdM;
-      } else {
-        walkBobTimer = 0;
-      }
+      } else walkBobTimer = 0;
       const targetVx = mv.x * 15 * spdM;
       const targetVz = mv.z * 15 * spdM;
       const accel = Math.min(1, dt * 16);
@@ -2886,9 +3044,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       const pair = playerPortals[ownerId];
       if (!pair || !pair.blue.active || !pair.orange.active) continue;
       [pair.blue, pair.orange].forEach((portal) => {
-        if (!portal.wallBody) {
-          portal.wallBody = findClosestWallBody(portal.pos, portal.normal, portal.wallIdx);
-        }
+        if (!portal.wallBody) portal.wallBody = findClosestWallBody(portal.pos, portal.normal, portal.wallIdx);
         if (!portal.wallBody || portal.wallBody.isFloor) return;
 
         let inMouth = (!drivingCar && !isShatteredLocal && isInsidePortalAperture(pPos, portal, playerRadius));
@@ -2907,14 +3063,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         if (!inMouth) {
           for (const id in activeProps) {
             const pr = activeProps[id];
-            if (!pr.isStatic && isInsidePortalAperture(pr.mesh.position, portal, pr.boundR)) {
-              inMouth = true; break;
-            }
+            if (!pr.isStatic && isInsidePortalAperture(pr.mesh.position, portal, pr.boundR)) { inMouth = true; break; }
           }
         }
-        if (inMouth) {
-          portal.wallBody.collisionResponse = false;
-        }
+        if (inMouth) portal.wallBody.collisionResponse = false;
       });
     }
 
@@ -2949,11 +3101,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
           }
         });
 
-        if (normalDist <= 0.48 && movingIn && r.portalCd <= 0) {
-          seamlessTeleportRagdoll(r, srcP, dstP);
-        }
+        if (normalDist <= 0.48 && movingIn && r.portalCd <= 0) seamlessTeleportRagdoll(r, srcP, dstP);
       }
-
       if (r.life !== Infinity && (r.life -= dt) <= 0) removeRagdoll(r);
     }
 
@@ -2973,7 +3122,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         localRig.root.visible = thirdPerson && !marbleMode;
         localRig.root.position.set(playerBody.position.x, playerBody.position.y - playerRadius, playerBody.position.z);
         localRig.root.rotation.y = yawObj.rotation.y;
-        animateHumanoidRig(localRig, moveSpd, dt, true);
+        animateMinecraftRig(localRig, moveSpd, dt, true);
 
         localPortalCloneRig.root.visible = false;
         setGroupClippingPlane(localRig.root, []);
@@ -3000,12 +3149,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
           const lookDir = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), yawObj.rotation.y);
           const outLook = transformVecBetweenPortals(lookDir, nearP, farP);
           localPortalCloneRig.root.rotation.y = Math.atan2(-outLook.x, -outLook.z);
-          animateHumanoidRig(localPortalCloneRig, moveSpd, dt, true);
+          animateMinecraftRig(localPortalCloneRig, moveSpd, dt, true);
           localPortalCloneRig.root.visible = true;
 
-          if (normalDist <= 0.45 && movingIntoPortal && portalCooldown <= 0) {
-            seamlessTeleportPlayer(nearP, farP);
-          }
+          if (normalDist <= 0.45 && movingIntoPortal && portalCooldown <= 0) seamlessTeleportPlayer(nearP, farP);
         }
 
         const nearStatue = findNearestStatue();
@@ -3064,9 +3211,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         c.portalClone.quaternion.copy(transformQuatBetweenPortals(c.group.quaternion, srcP, dstP));
         c.portalClone.visible = true;
 
-        if (normalDist <= 0.65 && movingIn && c.portalCd <= 0) {
-          seamlessTeleportCar(c, srcP, dstP);
-        }
+        if (normalDist <= 0.65 && movingIn && c.portalCd <= 0) seamlessTeleportCar(c, srcP, dstP);
       }
     }
 
@@ -3106,9 +3251,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
           p.portalClone.visible = true;
         }
 
-        if (normalDist <= 0.45 && movingIn && p.portalCd <= 0) {
-          seamlessTeleportProp(p, srcP, dstP);
-        }
+        if (normalDist <= 0.45 && movingIn && p.portalCd <= 0) seamlessTeleportProp(p, srcP, dstP);
       }
     }
 
@@ -3117,11 +3260,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       if (rp.isShattered) { rp.body.position.set(0, -500, 0); syncBodyAABB(rp.body); continue; }
       rp.group.position.lerp(rp.targetPos, 0.25);
       const moveSpd = rp.group.position.distanceTo(rp.prevPos) / Math.max(dt, 0.001);
-      rp.prevPos.copy(rp.group.position); animateHumanoidRig(rp.rig, moveSpd, dt, true);
+      rp.prevPos.copy(rp.group.position); animateMinecraftRig(rp.rig, moveSpd, dt, true);
       const diff = rp.targetRotY - rp.group.rotation.y;
       rp.group.rotation.y += Math.atan2(Math.sin(diff), Math.cos(diff)) * 0.25;
       if (rp.driving) rp.body.position.set(0, -500, 0);
-      else rp.body.position.set(rp.group.position.x, rp.group.position.y + BASE_PLAYER_RADIUS, rp.group.position.z);
+      else rp.body.position.set(rp.group.position.x, rp.group.position.y + BASE_PLAYER_RADIUS * (rp.remoteScale || 1), rp.group.position.z);
       syncBodyAABB(rp.body);
     }
 
