@@ -2601,19 +2601,44 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     isShatteredLocal = true; ragdollStart = Date.now();
     const p = playerBody.position;
     localRagdoll = spawnRagdoll({ x: p.x, y: p.y - playerRadius, z: p.z }, yawObj.rotation.y, myColor, dir, Infinity, extra);
-    world.removeBody(playerBody); camera.position.set(0, 1.5 * playerScale, 6 * playerScale); pitchObj.position.set(0, 0.5 * playerScale, 0);
-    syncPlayerState(true); if (autoRespawn) ragdollTimer = setTimeout(() => endLocalRagdoll(true), 4000);
+    if (world.bodies.includes(playerBody)) world.removeBody(playerBody);
+    camera.position.set(0, 1.5 * playerScale, 5.5 * playerScale);
+    pitchObj.position.set(0, 0.5 * playerScale, 0);
+    syncPlayerState(true);
+    if (autoRespawn) ragdollTimer = setTimeout(() => endLocalRagdoll(true), 4000);
   }
+
   function endLocalRagdoll(atSpawn) {
-    if (!isShatteredLocal) return; clearTimeout(ragdollTimer);
-    const t = localRagdoll ? localRagdoll.torso.position : null;
-    const tx = t ? t.x : 0, ty = t ? t.y : 0, tz = t ? t.z : 0;
+    if (!isShatteredLocal) return;
+    clearTimeout(ragdollTimer);
+    const t = localRagdoll && localRagdoll.torso ? localRagdoll.torso.position : null;
+    const tx = t ? t.x : 0, ty = t ? t.y : 15, tz = t ? t.z : 8;
     if (localRagdoll) { removeRagdoll(localRagdoll); localRagdoll = null; }
     isShatteredLocal = false;
-    if (atSpawn || !t) { setPlayerScaleFactor(1.0); playerBody.position.set(0, 15, 8); updateStatsUI(100, 50, 100); if (isConnected) sendPacket({ type: 'healSelf', amount: 100 }); }
-    else playerBody.position.set(tx, ty + 1.2 * playerScale, tz);
-    playerBody.velocity.set(0, 0, 0); playerBody.angularVelocity.set(0, 0, 0);
-    world.addBody(playerBody); applyCameraRig(); syncPlayerState(true);
+
+    if (atSpawn || !t) {
+      setPlayerScaleFactor(1.0);
+      playerBody.position.set(0, 15, 8);
+      updateStatsUI(100, 50, 100);
+      if (isConnected) sendPacket({ type: 'healSelf', amount: 100 });
+    } else {
+      playerBody.position.set(tx, Math.max(1.5, ty + 1.2 * playerScale), tz);
+    }
+    playerBody.velocity.set(0, 0, 0);
+    playerBody.angularVelocity.set(0, 0, 0);
+
+    if (!world.bodies.includes(playerBody)) {
+      world.addBody(playerBody);
+    }
+    playerBody.wakeUp();
+
+    playerObj.position.copy(playerBody.position);
+    applyCameraRig();
+    syncPlayerState(true);
+
+    if (!mobileMode && innerWidth > 768 && isPlaying) {
+      _d.body.requestPointerLock();
+    }
   }
   function toggleRagdoll() {
     if (!isPlaying || drivingCar) return;
@@ -3289,6 +3314,20 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     startScreen.classList.add('hidden'); crosshair.classList.remove('hidden');
     $('statusHud').classList.remove('hidden'); updateStatsUI(100, 50, 100);
     isPlaying = true;
+    isShatteredLocal = false;
+    if (localRagdoll) { removeRagdoll(localRagdoll); localRagdoll = null; }
+
+    playerBody.position.set(0, 15, 8);
+    playerBody.velocity.set(0, 0, 0);
+    playerBody.angularVelocity.set(0, 0, 0);
+    if (!world.bodies.includes(playerBody)) world.addBody(playerBody);
+    playerBody.wakeUp();
+
+    playerObj.position.copy(playerBody.position);
+    yawObj.rotation.set(0, 0, 0);
+    pitchObj.rotation.set(0, 0, 0);
+    applyCameraRig();
+
     if (!mobileMode && innerWidth > 768) _d.body.requestPointerLock();
   });
 
