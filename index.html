@@ -24,19 +24,20 @@ canvas{display:block;width:100vw;height:100vh;position:absolute;top:0;left:0;z-i
 .stat-pill{position:relative;width:130px;background:rgba(10,15,30,.88);border:2px solid rgba(255,255,255,.3);border-radius:999px;padding:3px;overflow:hidden}
 .stat-fill{height:14px;width:100%;border-radius:999px;transition:width .2s}
 .stat-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;text-shadow:1px 1px 2px #000}
-#ammoBadge{background:rgba(10,15,30,.9);border:2px solid #facc15;color:#fde047;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800}
+#ammoBadge,#scaleBadge{background:rgba(10,15,30,.9);border:2px solid #facc15;color:#fde047;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800;pointer-events:auto;cursor:pointer}
+#scaleBadge{border-color:#c084fc;color:#e9d5ff}
 #vehiclePrompt{position:absolute;bottom:110px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);border:2px solid #0ff;color:#0ff;padding:8px 18px;border-radius:999px;font-weight:bold;font-size:.86rem;z-index:25;cursor:pointer;white-space:nowrap}
 #hudBar{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(10,15,30,.85);border:1px solid rgba(52,211,153,.5);color:#d1fae5;padding:6px 14px;border-radius:999px;font-size:.76rem;z-index:25;pointer-events:none;white-space:nowrap}
-#settingsModal,#keybindsModal,#adminModal{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,15,30,.96);border:2px solid #0ff;border-radius:14px;padding:20px 24px;z-index:100;width:390px;max-width:94vw;max-height:85vh;overflow-y:auto}
+#settingsModal,#keybindsModal,#adminModal,#portalConfigModal{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,15,30,.96);border:2px solid #0ff;border-radius:14px;padding:18px 22px;z-index:100;width:410px;max-width:94vw;max-height:86vh;overflow-y:auto}
 #adminModal{border-color:#facc15;box-shadow:0 0 30px rgba(250,204,21,.25)}
-.modal-header{font-size:1.15rem;font-weight:bold;margin-bottom:12px;color:#0ff;border-bottom:1px solid rgba(0,255,255,.3);padding-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.setting-row{margin-bottom:11px}
-.setting-label{display:flex;justify-content:space-between;font-size:.82rem;color:#cbd5e1;margin-bottom:4px;font-weight:600}
+#portalConfigModal{border-color:#fb923c;box-shadow:0 0 30px rgba(249,115,22,.25)}
+.modal-header{font-size:1.1rem;font-weight:bold;margin-bottom:12px;color:#0ff;border-bottom:1px solid rgba(0,255,255,.3);padding-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.setting-row{margin-bottom:10px}
+.setting-label{display:flex;justify-content:space-between;font-size:.8rem;color:#cbd5e1;margin-bottom:3px;font-weight:600}
 #chatContainer{position:absolute;bottom:20px;left:20px;width:300px;max-height:230px;display:flex;flex-direction:column;justify-content:flex-end;z-index:30;pointer-events:none}
 #chatMessages{overflow-y:auto;max-height:180px;padding-bottom:8px;pointer-events:auto;text-shadow:1px 1px 2px #000;font-size:.85rem}
 .chat-msg{margin-bottom:4px;line-height:1.2;word-wrap:break-word}
 #chatInput{flex-grow:1;background:rgba(0,0,0,.65);border:1px solid #333;color:#fff;padding:7px;border-radius:4px;outline:none;pointer-events:auto}
-/* MOBİL MOD KONTROLLERİ */
 #mobileControls{display:none;position:absolute;inset:0;z-index:18;pointer-events:none}
 body.mobile-mode #mobileControls{display:block}
 body.mobile-mode #chatContainer{bottom:165px;left:14px;width:230px}
@@ -67,7 +68,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 <body>
 <div id="startScreen" class="flex flex-col items-center justify-center bg-gray-950 no-select px-4 py-6">
   <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500 mb-1 text-center tracking-tighter">PHYSICS SANDBOX</h1>
-  <p class="text-sm md:text-base text-fuchsia-300 mb-4 tracking-widest uppercase font-semibold text-center">Her Oyuncuya Özel Portal + Mobil Mod 📱🛡️</p>
+  <p class="text-sm md:text-base text-fuchsia-300 mb-4 tracking-widest uppercase font-semibold text-center">Ayrı X/Y Portal Boyutu + Büyüme/Küçülme + Grafik Ayarları 🌀📏</p>
 
   <div class="w-96 max-w-full bg-black/80 border-2 border-cyan-500/50 rounded-xl p-3.5 mb-3">
     <div class="flex items-center justify-between mb-2.5">
@@ -105,7 +106,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     <div id="savedServers" class="flex flex-wrap gap-2 w-full"></div>
   </div>
 
-  <p id="authStatus" class="text-gray-400 mb-4 font-mono text-xs text-center">Her oyuncunun Mavi ve Turuncu portalı kendine özeldir! Mobil Modu aşağıdan veya üst bardan açabilirsiniz.</p>
+  <p id="authStatus" class="text-gray-400 mb-4 font-mono text-xs text-center">Küçük portaldan büyük portala geçince büyürsünüz, büyükten küçüğe geçince küçülürsünüz!</p>
 
   <div class="flex flex-wrap gap-3 justify-center">
     <button id="playBtn" type="button" class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-full text-lg border-2 border-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.5)] cursor-pointer">ENTER PLAYGROUND</button>
@@ -116,10 +117,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
 <div id="topBar" class="no-select">
   <div class="flex gap-1.5 flex-wrap">
+    <button id="mainMenuBtn" type="button" class="ui-btn text-xs" style="border-color:#f43f5e" title="Ana Menüye Dön (ESC)">🏠 Ana Menü</button>
     <button id="buildBtn" type="button" class="ui-btn text-xs" style="border-color:#34d399">🧱 Objeler (B)</button>
     <button id="randomPropBtn" type="button" class="ui-btn text-xs" style="border-color:#f43f5e">🎲 Rastgele (G)</button>
     <button id="fingerModeBtn" type="button" class="ui-btn text-xs" style="border-color:#38bdf8">🌀 Mod: Portal (V)</button>
-    <button id="portalSizeBtn" type="button" class="ui-btn text-xs" style="border-color:#f97316" title="Tıkla veya Fare Tekerleğini Çevir">📏 Portal: 1.5x</button>
+    <button id="portalSizeBtn" type="button" class="ui-btn text-xs" style="border-color:#f97316" title="Her Portal İçin Ayrı X/Y Büyüklük Ayarla">📏 Portal X/Y</button>
     <button id="camViewBtn" type="button" class="ui-btn text-xs" style="border-color:#38bdf8">🎥 Kamera (C)</button>
     <button id="spawnCarBtn" type="button" class="ui-btn text-xs" style="border-color:#e879f9">Araba 🚗</button>
     <button id="ragdollBtn" type="button" class="ui-btn text-xs" style="border-color:#a855f7">Ragdoll (R)</button>
@@ -129,11 +131,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   <div class="flex gap-1.5">
     <button id="keybindsBtn" type="button" class="ui-btn icon-btn" title="Tuş Atamaları (K)">⌨️</button>
     <button id="fullscreenBtn" type="button" class="ui-btn icon-btn" title="Tam Ekran (F)">⛶</button>
-    <button id="settingsBtn" type="button" class="ui-btn icon-btn" title="Ayarlar">⚙️</button>
+    <button id="settingsBtn" type="button" class="ui-btn icon-btn" title="Grafik & Oyun Ayarları">⚙️</button>
   </div>
 </div>
 
-<!-- CAN, ZIRH VE MERMİ BARLARI -->
+<!-- CAN, ZIRH, MERMİ VE KARAKTER BOYUTU BARLARI -->
 <div id="statusHud" class="no-select hidden">
   <div class="stat-pill" style="border-color:rgba(244,63,94,.7)">
     <div id="hpBarFill" class="stat-fill" style="background:linear-gradient(90deg,#ef4444,#22c55e)"></div>
@@ -144,11 +146,68 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     <div id="armorText" class="stat-text">🛡️ 50 Zırh</div>
   </div>
   <div id="ammoBadge">🔋 100 Ammo</div>
+  <div id="scaleBadge" title="Boyutu 1.0x yapmak için tıkla">📐 Boyut: 1.00x</div>
 </div>
 
 <div id="vehiclePrompt" class="hidden no-select"></div>
 <div id="hudBar" class="no-select">
-  Kimlik: <b id="hudUserName" class="text-cyan-300">Anonim</b> · Boyut: <b id="hudPortalScale" class="text-orange-300">1.5x (Tekerlek)</b> · Silah: <b id="hudWeaponName" class="text-amber-300">🌀 Portal Gun</b> · Seçili: <b id="hudSelectedObj" class="text-emerald-300">📐 Rampa</b>
+  Kimlik: <b id="hudUserName" class="text-cyan-300">Anonim</b> · Boyutun: <b id="hudPlayerScale" class="text-purple-300">1.00x</b> · Portallar: <b id="hudPortalScale" class="text-orange-300">🔵1.5x1.5 | 🟠1.5x1.5</b> · Silah: <b id="hudWeaponName" class="text-amber-300">🌀 Portal Gun</b>
+</div>
+
+<!-- HER PORTAL İÇİN AYRI X / Y BÜYÜKLÜK AYARLAMA MODALI -->
+<div id="portalConfigModal" class="no-select">
+  <div class="modal-header" style="color:#fb923c;border-color:rgba(249,115,22,.35)">
+    <span>🌀 Ayrı Portal Boyutları (X &amp; Y)</span>
+    <button id="closePortalConfigTop" type="button" class="text-xs text-gray-300 hover:text-white cursor-pointer">✕</button>
+  </div>
+
+  <p class="text-xs text-gray-300 mb-3 leading-relaxed">
+    Küçük bir portaldan büyük bir portala geçtiğinizde (veya eşya/araba attığınızda) <b class="text-amber-300">büyürsünüz</b>, büyükten küçüğe geçince <b class="text-cyan-300">küçülürsünüz</b>!
+  </p>
+
+  <!-- MAVİ PORTAL X / Y -->
+  <div class="bg-sky-950/50 border border-sky-500/40 rounded-lg p-3 mb-3">
+    <div class="text-xs font-bold text-sky-300 mb-2 flex justify-between">
+      <span>🔵 Mavi Portal Boyutu</span>
+      <span id="bluePortalDimLabel" class="font-mono">X: 1.5 | Y: 1.5</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label"><span>Genişlik (X)</span><span id="blueScaleXVal">1.5x</span></div>
+      <input type="range" id="blueScaleXSlider" min="0.4" max="5.0" step="0.1" value="1.5" class="w-full accent-sky-400">
+    </div>
+    <div class="setting-row mb-0">
+      <div class="setting-label"><span>Yükseklik (Y)</span><span id="blueScaleYVal">1.5x</span></div>
+      <input type="range" id="blueScaleYSlider" min="0.4" max="5.0" step="0.1" value="1.5" class="w-full accent-sky-400">
+    </div>
+  </div>
+
+  <!-- TURUNCU PORTAL X / Y -->
+  <div class="bg-orange-950/50 border border-orange-500/40 rounded-lg p-3 mb-3">
+    <div class="text-xs font-bold text-orange-300 mb-2 flex justify-between">
+      <span>🟠 Turuncu Portal Boyutu</span>
+      <span id="orangePortalDimLabel" class="font-mono">X: 1.5 | Y: 1.5</span>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label"><span>Genişlik (X)</span><span id="orangeScaleXVal">1.5x</span></div>
+      <input type="range" id="orangeScaleXSlider" min="0.4" max="5.0" step="0.1" value="1.5" class="w-full accent-orange-400">
+    </div>
+    <div class="setting-row mb-0">
+      <div class="setting-label"><span>Yükseklik (Y)</span><span id="orangeScaleYVal">1.5x</span></div>
+      <input type="range" id="orangeScaleYSlider" min="0.4" max="5.0" step="0.1" value="1.5" class="w-full accent-orange-400">
+    </div>
+  </div>
+
+  <div class="text-xs font-bold text-purple-300 mb-1.5 uppercase">⚡ Hızlı Büyüme / Küçülme Şablonları</div>
+  <div class="grid grid-cols-3 gap-1.5 mb-3">
+    <button id="presetGrowBtn" type="button" class="py-1.5 px-2 bg-purple-800 hover:bg-purple-700 rounded text-[11px] font-bold cursor-pointer">🔵Küçük ➔ 🟠Dev</button>
+    <button id="presetShrinkBtn" type="button" class="py-1.5 px-2 bg-indigo-800 hover:bg-indigo-700 rounded text-[11px] font-bold cursor-pointer">🔵Dev ➔ 🟠Küçük</button>
+    <button id="presetEqualBtn" type="button" class="py-1.5 px-2 bg-gray-800 hover:bg-gray-700 rounded text-[11px] font-bold cursor-pointer">⚖️ Eşitle (1.5x)</button>
+  </div>
+
+  <div class="flex gap-2">
+    <button id="resetMySizeBtn" type="button" class="flex-1 py-2 bg-fuchsia-700 hover:bg-fuchsia-600 rounded font-bold text-xs cursor-pointer">📐 Karakter Boyutumu Sıfırla (1x)</button>
+    <button id="closePortalConfigBtn" type="button" class="px-5 py-2 bg-gray-700 hover:bg-gray-600 rounded font-bold text-xs cursor-pointer">Kapat</button>
+  </div>
 </div>
 
 <div id="adminModal" class="no-select">
@@ -181,9 +240,47 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   <button id="closeAdminBtn" type="button" class="w-full py-2 bg-gray-700 hover:bg-gray-600 rounded font-bold text-sm cursor-pointer">Kapat</button>
 </div>
 
+<!-- GELİŞMİŞ GRAFİK VE OYUN AYARLARI MODALI -->
 <div id="settingsModal" class="no-select">
-  <div class="modal-header"><span>⚙️ Oyun Ayarları</span><span id="fpsCounter" class="text-xs font-mono text-emerald-400">60 FPS</span></div>
-  <div class="setting-row flex items-center justify-between"><span class="text-sm font-semibold">Kıyafet &amp; Eldiven Rengi</span><input type="color" id="playerColorPicker" class="w-10 h-8 rounded cursor-pointer bg-transparent"></div>
+  <div class="modal-header"><span>⚙️ Grafik &amp; Oyun Ayarları</span><span id="fpsCounter" class="text-xs font-mono text-emerald-400">60 FPS</span></div>
+
+  <!-- GRAFİK AYARLARI BÖLÜMÜ -->
+  <div class="bg-slate-900/90 border border-cyan-500/30 rounded-lg p-3 mb-3">
+    <div class="text-xs font-bold text-cyan-300 mb-2 uppercase">🖥️ Grafik Ayarları</div>
+    <div class="setting-row">
+      <div class="setting-label"><span>Grafik Kalitesi (Ön Ayar)</span></div>
+      <select id="graphicsPresetSelect" class="w-full bg-gray-950 border border-cyan-500/50 rounded p-1.5 text-xs text-white font-semibold">
+        <option value="low">⚡ Düşük (Maksimum FPS)</option>
+        <option value="medium">⚖️ Orta (Dengeli)</option>
+        <option value="high" selected>✨ Yüksek (Kaliteli)</option>
+        <option value="ultra">💎 Ultra (Maksimum Görsellik)</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-label"><span>Çözünürlük Ölçeği (Render Scale)</span><span id="resScaleVal">1.0x</span></div>
+      <input type="range" id="resScaleSlider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full accent-cyan-400">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label"><span>Çizim Mesafesi &amp; Sis</span><span id="drawDistVal">600m</span></div>
+      <input type="range" id="drawDistSlider" min="200" max="1200" step="50" value="600" class="w-full accent-cyan-400">
+    </div>
+    <div class="setting-row">
+      <div class="setting-label"><span>Portal Kamera Kalitesi</span></div>
+      <select id="portalQualitySelect" class="w-full bg-gray-950 border border-cyan-500/40 rounded p-1.5 text-xs text-white">
+        <option value="256">Düşük (256px)</option>
+        <option value="512">Orta (512px)</option>
+        <option value="768" selected>Yüksek (768px)</option>
+        <option value="1024">Ultra (1024px)</option>
+      </select>
+    </div>
+    <div class="grid grid-cols-2 gap-1 text-xs mt-2">
+      <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="shadowsToggle" checked class="w-4 h-4"><span>Gölgeler</span></label>
+      <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="pointLightsToggle" checked class="w-4 h-4"><span>Neon Işıklar</span></label>
+    </div>
+  </div>
+
+  <!-- KARAKTER & KONTROL AYARLARI -->
+  <div class="setting-row flex items-center justify-between"><span class="text-xs font-semibold">Kıyafet &amp; Eldiven Rengi</span><input type="color" id="playerColorPicker" class="w-10 h-7 rounded cursor-pointer bg-transparent"></div>
   <div class="setting-row">
     <div class="setting-label"><span>Karakter Modeli</span></div>
     <select id="skinSelect" class="w-full bg-gray-900 border border-cyan-500/50 rounded p-1.5 text-xs text-white">
@@ -194,22 +291,22 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       <option value="soldier">🪖 Taktik Asker (Yarış Pisti)</option>
     </select>
   </div>
-  <div class="setting-row">
-    <div class="setting-label"><span>📏 Portal Büyüklüğü (Kendi Portalların)</span><span id="portalScaleVal">1.5x</span></div>
-    <input type="range" id="portalScaleSlider" min="0.5" max="4.0" step="0.1" value="1.5" class="w-full accent-orange-400">
-  </div>
   <div class="setting-row"><div class="setting-label"><span>Kamera Hassasiyeti</span><span id="sensVal">1.0x</span></div><input type="range" id="sensSlider" min="0.2" max="3" step="0.1" value="1" class="w-full accent-cyan-400"></div>
   <div class="setting-row"><div class="setting-label"><span>Görüş Açısı (FOV)</span><span id="fovVal">75°</span></div><input type="range" id="fovSlider" min="60" max="110" step="1" value="75" class="w-full accent-cyan-400"></div>
-  <label class="flex items-center space-x-3 cursor-pointer mb-2 text-sm"><input type="checkbox" id="mobileModeToggle" class="w-4 h-4"><span>📱 Mobil Modu Aktif Et (Dokunmatik Kontroller)</span></label>
-  <label class="flex items-center space-x-3 cursor-pointer mb-2 text-sm"><input type="checkbox" id="ragdollToggle" checked class="w-4 h-4"><span>Vurulunca Ragdoll</span></label>
-  <label class="flex items-center space-x-3 cursor-pointer mb-2 text-sm"><input type="checkbox" id="fingerGunToggle" checked class="w-4 h-4"><span>3B Silah/El Modelini Göster 👉</span></label>
-  <label class="flex items-center space-x-3 cursor-pointer mb-2 text-sm"><input type="checkbox" id="shadowsToggle" checked class="w-4 h-4"><span>Gölgeler</span></label>
-  <label class="flex items-center space-x-3 cursor-pointer mb-3 text-sm"><input type="checkbox" id="ghostToggle" checked class="w-4 h-4"><span>Obje Önizlemesi (Ghost)</span></label>
-  <div class="grid grid-cols-2 gap-2 mb-3">
-    <button id="openKeybindsFromSettings" type="button" class="py-2 bg-indigo-700 rounded font-bold text-xs cursor-pointer">⌨️ Tuş Atamaları</button>
-    <button id="respawnBtn" type="button" class="py-2 bg-amber-600 rounded font-bold text-xs cursor-pointer">🔄 Yeniden Doğ</button>
+  <label class="flex items-center space-x-3 cursor-pointer mb-1.5 text-xs"><input type="checkbox" id="mobileModeToggle" class="w-4 h-4"><span>📱 Mobil Modu Aktif Et (Dokunmatik Kontroller)</span></label>
+  <label class="flex items-center space-x-3 cursor-pointer mb-1.5 text-xs"><input type="checkbox" id="ragdollToggle" checked class="w-4 h-4"><span>Vurulunca Ragdoll</span></label>
+  <label class="flex items-center space-x-3 cursor-pointer mb-1.5 text-xs"><input type="checkbox" id="fingerGunToggle" checked class="w-4 h-4"><span>3B Silah/El Modelini Göster 👉</span></label>
+  <label class="flex items-center space-x-3 cursor-pointer mb-3 text-xs"><input type="checkbox" id="ghostToggle" checked class="w-4 h-4"><span>Obje Önizlemesi (Ghost)</span></label>
+
+  <div class="grid grid-cols-2 gap-2 mb-2">
+    <button id="openPortalCfgFromSettings" type="button" class="py-2 bg-orange-600 hover:bg-orange-500 rounded font-bold text-xs cursor-pointer">📏 Portal X/Y Ayarı</button>
+    <button id="openKeybindsFromSettings" type="button" class="py-2 bg-indigo-700 hover:bg-indigo-600 rounded font-bold text-xs cursor-pointer">⌨️ Tuş Atamaları</button>
   </div>
-  <button id="closeSettingsBtn" type="button" class="w-full py-2 bg-gray-700 rounded font-bold text-sm cursor-pointer">Kapat</button>
+  <div class="grid grid-cols-2 gap-2 mb-2">
+    <button id="respawnBtn" type="button" class="py-2 bg-amber-600 hover:bg-amber-500 rounded font-bold text-xs cursor-pointer">🔄 Yeniden Doğ</button>
+    <button id="returnMainMenuBtn" type="button" class="py-2 bg-rose-700 hover:bg-rose-600 rounded font-bold text-xs cursor-pointer">🏠 Ana Menüye Dön</button>
+  </div>
+  <button id="closeSettingsBtn" type="button" class="w-full py-2 bg-gray-700 hover:bg-gray-600 rounded font-bold text-sm cursor-pointer">Kapat</button>
 </div>
 
 <div id="keybindsModal" class="no-select">
@@ -300,16 +397,24 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   let mobileMode = isTouchDevice;
   let isPlaying = false, isShatteredLocal = false, ragdollEnabled = true, showGhost = true, showFingerGun = true, lookSensitivity = 1, invertY = false, thirdPerson = false;
   let mySkin = 'default';
-  let currentPortalScale = 1.5;
+
+  // HER PORTAL İÇİN AYRI X VE Y BÜYÜKLÜKLERİ
+  let blueScaleX = 1.5, blueScaleY = 1.5;
+  let orangeScaleX = 1.5, orangeScaleY = 1.5;
+
+  // OYUNCU BÜYÜME / KÜÇÜLME ÖLÇEĞİ
+  const BASE_PLAYER_RADIUS = 0.8;
+  let playerScale = 1.0;
+  let playerRadius = BASE_PLAYER_RADIUS;
+
   const isHex = (s) => typeof s === 'string' && /^#[0-9a-f]{6}$/i.test(s);
   const randHex = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
   let myColor = randHex();
   const startScreen = $('startScreen'), serverIpInput = $('serverIpInput'), authStatus = $('authStatus');
   const crosshair = $('crosshair'), chatInput = $('chatInput'), chatMessages = $('chatMessages');
-  const settingsModal = $('settingsModal'), keybindsModal = $('keybindsModal'), adminModal = $('adminModal'), buildMenu = $('buildMenu'), vehiclePrompt = $('vehiclePrompt');
+  const settingsModal = $('settingsModal'), keybindsModal = $('keybindsModal'), adminModal = $('adminModal'), portalConfigModal = $('portalConfigModal'), buildMenu = $('buildMenu'), vehiclePrompt = $('vehiclePrompt');
   $('playerColorPicker').value = myColor;
 
-  // MOBİL MOD AÇ/KAPA FONKSİYONU
   function setMobileMode(enabled) {
     mobileMode = Boolean(enabled);
     _d.body.classList.toggle('mobile-mode', mobileMode);
@@ -327,6 +432,23 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   $('startMobileBtn').addEventListener('click', () => setMobileMode(!mobileMode));
   $('mobileModeToggle').addEventListener('change', (e) => setMobileMode(e.target.checked));
 
+  // ANA MENÜYE DÖNME FONKSİYONU
+  function returnToMainMenu() {
+    isPlaying = false;
+    if (_d.pointerLockElement) _d.exitPointerLock();
+    settingsModal.style.display = 'none';
+    keybindsModal.style.display = 'none';
+    adminModal.style.display = 'none';
+    portalConfigModal.style.display = 'none';
+    buildMenu.style.display = 'none';
+    crosshair.classList.add('hidden');
+    $('statusHud').classList.add('hidden');
+    vehiclePrompt.classList.add('hidden');
+    startScreen.classList.remove('hidden');
+  }
+  $('mainMenuBtn').addEventListener('click', (e) => { e.currentTarget.blur(); returnToMainMenu(); });
+  $('returnMainMenuBtn').addEventListener('click', returnToMainMenu);
+
   function updateStatsUI(hpVal, armVal, ammoVal) {
     if (hpVal !== undefined) _0xV.setHp(hpVal);
     if (armVal !== undefined) _0xV.setArm(armVal);
@@ -337,6 +459,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     $('armorBarFill').style.width = arm + '%';
     $('armorText').textContent = '🛡️ ' + arm + ' Zırh';
     $('ammoBadge').textContent = '🔋 ' + am + ' Ammo';
+    $('scaleBadge').textContent = `📐 Boyut: ${playerScale.toFixed(2)}x`;
+    $('hudPlayerScale').textContent = `${playerScale.toFixed(2)}x`;
   }
 
   const RAG_DEFS = {
@@ -419,14 +543,14 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x050014);
-  scene.fog = new THREE.FogExp2(0x050014, 0.006);
-  const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.05, 1000);
+  scene.fog = new THREE.FogExp2(0x050014, 0.0045);
+  const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.05, 600);
   const playerObj = new THREE.Object3D(), yawObj = new THREE.Object3D(), pitchObj = new THREE.Object3D();
   scene.add(playerObj); playerObj.add(yawObj); yawObj.add(pitchObj); pitchObj.add(camera);
   pitchObj.position.y = 1.25;
-  const renderer = new THREE.WebGLRenderer({ antialias: !isTouchDevice, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, isTouchDevice ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, isTouchDevice ? 1.25 : 1.75));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.localClippingEnabled = true;
@@ -439,8 +563,11 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   moonLight.shadow.mapSize.set(isTouchDevice ? 1024 : 2048, isTouchDevice ? 1024 : 2048);
   if (isTouchDevice) { renderer.shadowMap.enabled = false; moonLight.castShadow = false; $('shadowsToggle').checked = false; }
   scene.add(moonLight); scene.add(moonLight.target);
+
+  const mapPointLights = [];
   [[0, 14, 0, 0x00ffff], [60, 24, 10, 0xff00ff], [90, 50, 0, 0x00ffaa], [-90, 12, -60, 0x8b5cf6], [160, 22, 0, 0xf97316]].forEach(([x, y, z, c]) => {
     const l = new THREE.PointLight(c, 1.2, 60); l.position.set(x, y, z); scene.add(l);
+    mapPointLights.push(l);
   });
   const flashLight = new THREE.PointLight(0xffff00, 0, 10);
   flashLight.position.set(0, 0, -1); pitchObj.add(flashLight);
@@ -523,6 +650,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     scene.remove(localPortalCloneRig.root);
     localRig = buildRealisticHumanoid(myColor, mySkin);
     localPortalCloneRig = buildRealisticHumanoid(myColor, mySkin);
+    localRig.root.scale.set(playerScale, playerScale, playerScale);
+    localPortalCloneRig.root.scale.set(playerScale, playerScale, playerScale);
     localRig.root.visible = thirdPerson && !drivingCar && !marbleMode && !isShatteredLocal;
     localPortalCloneRig.root.visible = false;
     scene.add(localRig.root);
@@ -708,7 +837,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     handSubGroup.visible = (m.id !== 'gravity' && m.id !== 'portal');
     gravityGunSubModel.visible = (m.id === 'gravity');
     portalGunSubModel.visible = (m.id === 'portal');
-    // Mobil modda sağ aksiyon tuşlarının etiketini silaha göre güncelle
     if (m.id === 'portal') {
       $('shootBtnMobile').innerHTML = '🔵<br>MAVİ';
       $('altShootBtnMobile').innerHTML = '🟠<br>TURUNCU';
@@ -853,11 +981,14 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     return null;
   }
 
-  // ================= HER OYUNCU İÇİN AYRI PORTAL SİSTEMİ (playerPortals) =================
+  // ================= HER OYUNCU İÇİN AYRI X/Y BOYUTLU PORTAL SİSTEMİ =================
   let portalCooldown = 0;
-  const portalRes = isTouchDevice ? 384 : 768;
-  // { [ownerId]: { blue: PortalInstance, orange: PortalInstance } }
+  let portalRes = isTouchDevice ? 384 : 768;
   const playerPortals = {};
+
+  function getPortalEffectiveScale(p) {
+    return Math.sqrt((p.scaleX || 1.5) * (p.scaleY || 1.5));
+  }
 
   function makePortalSystem(hexColor, isOrangeFlag, ownerId) {
     const rt = new THREE.WebGLRenderTarget(portalRes, portalRes, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
@@ -919,7 +1050,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     tunnel.position.z = -0.22;
     g.add(tunnel);
 
-    // Portalın üstünde hangi oyuncuya ait olduğunu gösteren küçük etiket
     const canvas = _d.createElement('canvas'); canvas.width = 256; canvas.height = 48;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(28, 6, 200, 36);
@@ -937,7 +1067,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     return {
       ownerId, isOrange: isOrangeFlag,
       group: g, inner, surfaceMat, rt, cam, hexColor, clipPlane, labelTex,
-      active: false, scale: 1.5, pos: new THREE.Vector3(), normal: new THREE.Vector3(0, 0, 1),
+      active: false, scale: 1.5, scaleX: 1.5, scaleY: 1.5,
+      pos: new THREE.Vector3(), normal: new THREE.Vector3(0, 0, 1),
       wallBody: null, wallIdx: -1
     };
   }
@@ -966,18 +1097,18 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     delete playerPortals[ownerId];
   }
 
-  function applyPortalTransform(p, px, py, pz, nx, ny, nz, wallIdx = -1, propId = null, customScale = null) {
+  function applyPortalTransform(p, px, py, pz, nx, ny, nz, wallIdx = -1, propId = null, sx = null, sy = null) {
     if (p.wallBody) p.wallBody.collisionResponse = true;
-    if (customScale !== null && customScale !== undefined) {
-      p.scale = Math.max(0.5, Math.min(4.0, customScale));
-    } else {
-      p.scale = currentPortalScale;
-    }
+    const defX = p.isOrange ? orangeScaleX : blueScaleX;
+    const defY = p.isOrange ? orangeScaleY : blueScaleY;
+    p.scaleX = Math.max(0.4, Math.min(5.0, sx !== null && sx !== undefined ? sx : defX));
+    p.scaleY = Math.max(0.4, Math.min(5.0, sy !== null && sy !== undefined ? sy : defY));
+    p.scale  = getPortalEffectiveScale(p);
 
     p.normal.set(nx, ny, nz).normalize();
     p.pos.set(px, py, pz);
     p.group.position.copy(p.pos);
-    p.group.scale.set(p.scale, p.scale, p.scale);
+    p.group.scale.set(p.scaleX, p.scaleY, 1.0);
     const upVec = Math.abs(p.normal.y) > 0.9 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
     p.group.up.copy(upVec);
     p.group.lookAt(p.pos.clone().add(p.normal));
@@ -990,41 +1121,99 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     p.active = true;
   }
 
-  function setPortalScaleValue(newScale, broadcastChange = true, targetOwnerId = null) {
-    const owner = targetOwnerId || _uid;
-    const clamped = Math.max(0.5, Math.min(4.0, Math.round(newScale * 10) / 10));
-    if (owner === _uid) {
-      currentPortalScale = clamped;
-      const lbl = currentPortalScale.toFixed(1) + 'x';
-      $('portalSizeBtn').textContent = `📏 Portal: ${lbl}`;
-      $('hudPortalScale').textContent = `${lbl} (Tekerlek)`;
-      $('portalScaleVal').textContent = lbl;
-      $('portalScaleSlider').value = currentPortalScale;
-    }
-    const pair = getOrCreatePlayerPortalPair(owner);
-    [pair.blue, pair.orange].forEach((p) => {
-      p.scale = clamped;
-      p.group.scale.set(clamped, clamped, clamped);
-      p.group.updateMatrixWorld();
-    });
-    if (broadcastChange && owner === _uid && isConnected) {
-      sendPacket({ type: 'portalScale', ownerId: _uid, scale: currentPortalScale });
+  function updatePortalDimensionUI() {
+    $('blueScaleXVal').textContent = blueScaleX.toFixed(1) + 'x';
+    $('blueScaleYVal').textContent = blueScaleY.toFixed(1) + 'x';
+    $('bluePortalDimLabel').textContent = `X: ${blueScaleX.toFixed(1)} | Y: ${blueScaleY.toFixed(1)}`;
+    $('blueScaleXSlider').value = blueScaleX;
+    $('blueScaleYSlider').value = blueScaleY;
+
+    $('orangeScaleXVal').textContent = orangeScaleX.toFixed(1) + 'x';
+    $('orangeScaleYVal').textContent = orangeScaleY.toFixed(1) + 'x';
+    $('orangePortalDimLabel').textContent = `X: ${orangeScaleX.toFixed(1)} | Y: ${orangeScaleY.toFixed(1)}`;
+    $('orangeScaleXSlider').value = orangeScaleX;
+    $('orangeScaleYSlider').value = orangeScaleY;
+
+    $('hudPortalScale').textContent = `🔵${blueScaleX.toFixed(1)}x${blueScaleY.toFixed(1)} | 🟠${orangeScaleX.toFixed(1)}x${orangeScaleY.toFixed(1)}`;
+  }
+
+  function syncMyPortalDimensions(broadcastChange = true) {
+    updatePortalDimensionUI();
+    const pair = getOrCreatePlayerPortalPair(_uid);
+    pair.blue.scaleX = blueScaleX;
+    pair.blue.scaleY = blueScaleY;
+    pair.blue.scale  = getPortalEffectiveScale(pair.blue);
+    pair.blue.group.scale.set(blueScaleX, blueScaleY, 1.0);
+    pair.blue.group.updateMatrixWorld();
+
+    pair.orange.scaleX = orangeScaleX;
+    pair.orange.scaleY = orangeScaleY;
+    pair.orange.scale  = getPortalEffectiveScale(pair.orange);
+    pair.orange.group.scale.set(orangeScaleX, orangeScaleY, 1.0);
+    pair.orange.group.updateMatrixWorld();
+
+    if (broadcastChange && isConnected) {
+      if (pair.blue.active) {
+        sendPacket({
+          type: 'placePortal', ownerId: _uid, isOrange: false,
+          x: pair.blue.pos.x, y: pair.blue.pos.y, z: pair.blue.pos.z,
+          nx: pair.blue.normal.x, ny: pair.blue.normal.y, nz: pair.blue.normal.z,
+          scale: pair.blue.scale, scaleX: blueScaleX, scaleY: blueScaleY, wallIdx: pair.blue.wallIdx
+        });
+      }
+      if (pair.orange.active) {
+        sendPacket({
+          type: 'placePortal', ownerId: _uid, isOrange: true,
+          x: pair.orange.pos.x, y: pair.orange.pos.y, z: pair.orange.pos.z,
+          nx: pair.orange.normal.x, ny: pair.orange.normal.y, nz: pair.orange.normal.z,
+          scale: pair.orange.scale, scaleX: orangeScaleX, scaleY: orangeScaleY, wallIdx: pair.orange.wallIdx
+        });
+      }
     }
   }
 
-  function cycleMyPortalScale() {
-    const presets = [1.0, 1.5, 2.2, 3.0, 4.0, 0.7];
-    const next = presets[(presets.indexOf(currentPortalScale) + 1) % presets.length] || 1.5;
-    setPortalScaleValue(next, true, _uid);
+  function togglePortalConfigModal() {
+    const open = portalConfigModal.style.display !== 'block';
+    portalConfigModal.style.display = open ? 'block' : 'none';
+    if (open) {
+      settingsModal.style.display = 'none';
+      updatePortalDimensionUI();
+      if (_d.pointerLockElement) _d.exitPointerLock();
+    }
   }
-  $('portalSizeBtn').addEventListener('click', (e) => { e.currentTarget.blur(); cycleMyPortalScale(); });
-  $('portalScaleSlider').addEventListener('input', (e) => setPortalScaleValue(parseFloat(e.target.value), true, _uid));
+
+  $('portalSizeBtn').addEventListener('click', (e) => { e.currentTarget.blur(); togglePortalConfigModal(); });
+  $('openPortalCfgFromSettings').addEventListener('click', togglePortalConfigModal);
+  $('closePortalConfigBtn').addEventListener('click', () => (portalConfigModal.style.display = 'none'));
+  $('closePortalConfigTop').addEventListener('click', () => (portalConfigModal.style.display = 'none'));
+
+  $('blueScaleXSlider').addEventListener('input', (e) => { blueScaleX = parseFloat(e.target.value); syncMyPortalDimensions(true); });
+  $('blueScaleYSlider').addEventListener('input', (e) => { blueScaleY = parseFloat(e.target.value); syncMyPortalDimensions(true); });
+  $('orangeScaleXSlider').addEventListener('input', (e) => { orangeScaleX = parseFloat(e.target.value); syncMyPortalDimensions(true); });
+  $('orangeScaleYSlider').addEventListener('input', (e) => { orangeScaleY = parseFloat(e.target.value); syncMyPortalDimensions(true); });
+
+  $('presetGrowBtn').addEventListener('click', () => {
+    blueScaleX = 0.8; blueScaleY = 0.8;
+    orangeScaleX = 2.8; orangeScaleY = 2.8;
+    syncMyPortalDimensions(true);
+  });
+  $('presetShrinkBtn').addEventListener('click', () => {
+    blueScaleX = 2.8; blueScaleY = 2.8;
+    orangeScaleX = 0.8; orangeScaleY = 0.8;
+    syncMyPortalDimensions(true);
+  });
+  $('presetEqualBtn').addEventListener('click', () => {
+    blueScaleX = 1.5; blueScaleY = 1.5;
+    orangeScaleX = 1.5; orangeScaleY = 1.5;
+    syncMyPortalDimensions(true);
+  });
 
   // Yerel oyuncunun kendi başlangıç portallarını kur
   (function initMyDefaultPortals() {
     const myPair = getOrCreatePlayerPortalPair(_uid);
-    applyPortalTransform(myPair.blue, -8.28, 4.8, -6, 1, 0, 0, 2, null, 1.5);
-    applyPortalTransform(myPair.orange, 8.28, 4.8, -6, -1, 0, 0, 3, null, 1.5);
+    applyPortalTransform(myPair.blue, -8.28, 4.8, -6, 1, 0, 0, 2, null, blueScaleX, blueScaleY);
+    applyPortalTransform(myPair.orange, 8.28, 4.8, -6, -1, 0, 0, 3, null, orangeScaleX, orangeScaleY);
+    updatePortalDimensionUI();
   })();
 
   function placePortal(isOrange) {
@@ -1039,17 +1228,22 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     spawnLaserBeam(startBeam, hit.point, isOrange ? 0xf97316 : 0x38bdf8);
     const myPair = getOrCreatePlayerPortalPair(_uid);
     const p = isOrange ? myPair.orange : myPair.blue;
+    const sx = isOrange ? orangeScaleX : blueScaleX;
+    const sy = isOrange ? orangeScaleY : blueScaleY;
     const norm = hit.face ? hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize() : new THREE.Vector3(0, 1, 0);
     const pos = hit.point.clone().addScaledVector(norm, 0.12);
     const wallIdx = hit.object.userData?.wallIdx ?? -1;
     const propId = hit.object.userData?.isProp ? hit.object.userData.id : null;
-    applyPortalTransform(p, pos.x, pos.y, pos.z, norm.x, norm.y, norm.z, wallIdx, propId, currentPortalScale);
+    applyPortalTransform(p, pos.x, pos.y, pos.z, norm.x, norm.y, norm.z, wallIdx, propId, sx, sy);
     if (isConnected) {
-      sendPacket({ type: 'placePortal', ownerId: _uid, isOrange, x: pos.x, y: pos.y, z: pos.z, nx: norm.x, ny: norm.y, nz: norm.z, scale: currentPortalScale, wallIdx });
+      sendPacket({
+        type: 'placePortal', ownerId: _uid, isOrange,
+        x: pos.x, y: pos.y, z: pos.z, nx: norm.x, ny: norm.y, nz: norm.z,
+        scale: p.scale, scaleX: sx, scaleY: sy, wallIdx
+      });
     }
   }
 
-  // Bir noktaya en yakın aktif portal çiftini (srcP ve onun eşleniği dstP) döndürür
   function findClosestActivePortalPair(pt) {
     let bestSrc = null, bestDst = null, minDist = Infinity;
     for (const ownerId in playerPortals) {
@@ -1067,13 +1261,16 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   const _pCamQuat = new THREE.Quaternion();
   const _pRotY180 = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI);
 
+  // X ve Y eksenlerini ayrı oranlayarak noktayı bir portaldan diğerine dönüştürür
   function transformPointBetweenPortals(worldPt, srcP, dstP) {
     const rel = worldPt.clone().sub(srcP.pos);
     const srcInvQ = srcP.group.quaternion.clone().invert();
     rel.applyQuaternion(srcInvQ);
     rel.applyQuaternion(_pRotY180);
-    const scaleRatio = (dstP.scale || 1) / (srcP.scale || 1);
-    rel.multiplyScalar(scaleRatio);
+    const rx = (dstP.scaleX || dstP.scale || 1.5) / (srcP.scaleX || srcP.scale || 1.5);
+    const ry = (dstP.scaleY || dstP.scale || 1.5) / (srcP.scaleY || srcP.scale || 1.5);
+    const rz = getPortalEffectiveScale(dstP) / getPortalEffectiveScale(srcP);
+    rel.set(rel.x * rx, rel.y * ry, rel.z * rz);
     rel.applyQuaternion(dstP.group.quaternion);
     return dstP.pos.clone().add(rel);
   }
@@ -1108,7 +1305,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       pair.orange.surfaceMat.uniforms.uLinked.value = linked;
       if (!linked) continue;
 
-      // Performans için 130 birime kadar olan aktif portalların kamerasını canlı çiz
       if (_pCamWorldPos.distanceTo(pair.blue.pos) < 130 || _pCamWorldPos.distanceTo(pair.orange.pos) < 130) {
         pair.blue.surfaceMat.uniforms.uResolution.value.set(innerWidth * pr, innerHeight * pr);
         pair.orange.surfaceMat.uniforms.uResolution.value.set(innerWidth * pr, innerHeight * pr);
@@ -1165,6 +1361,77 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     setTimeout(() => { scene.remove(line); geo.dispose(); mat.dispose(); }, 90);
   }
 
+  // ================= GRAFİK AYARLARI İŞLEYİCİLERİ =================
+  function resizeAllPortalTargets(newRes) {
+    portalRes = newRes;
+    for (const ownerId in playerPortals) {
+      const pair = playerPortals[ownerId];
+      if (!pair) continue;
+      pair.blue.rt.setSize(portalRes, portalRes);
+      pair.orange.rt.setSize(portalRes, portalRes);
+    }
+  }
+
+  function applyGraphicsPreset(preset) {
+    if (preset === 'low') {
+      renderer.setPixelRatio(0.75);
+      $('resScaleSlider').value = 0.75; $('resScaleVal').textContent = '0.8x';
+      renderer.shadowMap.enabled = false; moonLight.castShadow = false; $('shadowsToggle').checked = false;
+      mapPointLights.forEach((l) => (l.visible = false)); $('pointLightsToggle').checked = false;
+      camera.far = 350; camera.updateProjectionMatrix(); scene.fog.density = 0.008;
+      $('drawDistSlider').value = 350; $('drawDistVal').textContent = '350m';
+      $('portalQualitySelect').value = '256'; resizeAllPortalTargets(256);
+    } else if (preset === 'medium') {
+      renderer.setPixelRatio(1.0);
+      $('resScaleSlider').value = 1.0; $('resScaleVal').textContent = '1.0x';
+      renderer.shadowMap.enabled = false; moonLight.castShadow = false; $('shadowsToggle').checked = false;
+      mapPointLights.forEach((l) => (l.visible = true)); $('pointLightsToggle').checked = true;
+      camera.far = 550; camera.updateProjectionMatrix(); scene.fog.density = 0.0055;
+      $('drawDistSlider').value = 550; $('drawDistVal').textContent = '550m';
+      $('portalQualitySelect').value = '512'; resizeAllPortalTargets(512);
+    } else if (preset === 'high') {
+      const pr = Math.min(devicePixelRatio, 1.5);
+      renderer.setPixelRatio(pr);
+      $('resScaleSlider').value = pr; $('resScaleVal').textContent = pr.toFixed(1) + 'x';
+      renderer.shadowMap.enabled = true; moonLight.castShadow = true;
+      moonLight.shadow.mapSize.set(1024, 1024); if (moonLight.shadow.map) { moonLight.shadow.map.dispose(); moonLight.shadow.map = null; }
+      $('shadowsToggle').checked = true;
+      mapPointLights.forEach((l) => (l.visible = true)); $('pointLightsToggle').checked = true;
+      camera.far = 750; camera.updateProjectionMatrix(); scene.fog.density = 0.004;
+      $('drawDistSlider').value = 750; $('drawDistVal').textContent = '750m';
+      $('portalQualitySelect').value = '768'; resizeAllPortalTargets(768);
+    } else if (preset === 'ultra') {
+      const pr = Math.min(devicePixelRatio, 2.0);
+      renderer.setPixelRatio(pr);
+      $('resScaleSlider').value = pr; $('resScaleVal').textContent = pr.toFixed(1) + 'x';
+      renderer.shadowMap.enabled = true; moonLight.castShadow = true;
+      moonLight.shadow.mapSize.set(2048, 2048); if (moonLight.shadow.map) { moonLight.shadow.map.dispose(); moonLight.shadow.map = null; }
+      $('shadowsToggle').checked = true;
+      mapPointLights.forEach((l) => (l.visible = true)); $('pointLightsToggle').checked = true;
+      camera.far = 1100; camera.updateProjectionMatrix(); scene.fog.density = 0.0022;
+      $('drawDistSlider').value = 1100; $('drawDistVal').textContent = '1100m';
+      $('portalQualitySelect').value = '1024'; resizeAllPortalTargets(1024);
+    }
+    scene.traverse((o) => { if (o.material) o.material.needsUpdate = true; });
+  }
+
+  $('graphicsPresetSelect').addEventListener('change', (e) => applyGraphicsPreset(e.target.value));
+  $('resScaleSlider').addEventListener('input', (e) => {
+    const v = parseFloat(e.target.value);
+    renderer.setPixelRatio(v);
+    $('resScaleVal').textContent = v.toFixed(1) + 'x';
+  });
+  $('drawDistSlider').addEventListener('input', (e) => {
+    const d = parseFloat(e.target.value);
+    camera.far = d; camera.updateProjectionMatrix();
+    scene.fog.density = Math.max(0.0015, 2.7 / d);
+    $('drawDistVal').textContent = d + 'm';
+  });
+  $('portalQualitySelect').addEventListener('change', (e) => resizeAllPortalTargets(parseInt(e.target.value, 10)));
+  $('pointLightsToggle').addEventListener('change', (e) => {
+    mapPointLights.forEach((l) => (l.visible = e.target.checked));
+  });
+
   $('settingsBtn').addEventListener('click', () => {
     settingsModal.style.display = settingsModal.style.display === 'block' ? 'none' : 'block';
     if (settingsModal.style.display === 'block' && _d.pointerLockElement) _d.exitPointerLock();
@@ -1186,6 +1453,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   $('respawnBtn').addEventListener('click', () => {
     if (drivingCar) exitCar();
     if (isShatteredLocal) endLocalRagdoll(true);
+    setPlayerScaleFactor(1.0);
     playerBody.position.set(0, 15, 8); playerBody.velocity.set(0, 0, 0);
     updateStatsUI(100, 50, 100); settingsModal.style.display = 'none';
   });
@@ -1274,7 +1542,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     if (t) { sendPacket({ type: 'adminAction', action: 'announce', text: t }); $('admAnnounceInput').value = ''; }
   });
 
-  const playerRadius = 0.8;
+  // ================= OYUNCU FİZİĞİ VE BÜYÜME/KÜÇÜLME SİSTEMİ =================
   const playerBody = new CANNON.Body({ mass: 5, material: playerMat, linearDamping: 0.01, allowSleep: false });
   playerBody.addShape(new CANNON.Sphere(playerRadius));
   playerBody.position.set(0, 15, 8);
@@ -1282,10 +1550,29 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   world.addBody(playerBody);
   let jumpCooldown = 0;
 
+  function setPlayerScaleFactor(newScale) {
+    playerScale = Math.max(0.25, Math.min(4.5, newScale));
+    playerRadius = BASE_PLAYER_RADIUS * playerScale;
+    if (playerBody.shapes[0]) {
+      playerBody.shapes[0].radius = playerRadius;
+      playerBody.shapes[0].updateBoundingSphereRadius();
+      playerBody.updateBoundingRadius();
+      playerBody.computeAABB();
+    }
+    localRig.root.scale.set(playerScale, playerScale, playerScale);
+    localPortalCloneRig.root.scale.set(playerScale, playerScale, playerScale);
+    marbleMesh.scale.set(playerScale, playerScale, playerScale);
+    applyCameraRig();
+    updateStatsUI();
+  }
+
+  $('scaleBadge').addEventListener('click', () => setPlayerScaleFactor(1.0));
+  $('resetMySizeBtn').addEventListener('click', () => setPlayerScaleFactor(1.0));
+
   playerBody.addEventListener('collide', (e) => {
     const other = e.body;
     if (!other) return;
-    if (other.isTrampoline && jumpCooldown <= 0) { playerBody.velocity.y = 26; jumpCooldown = 0.2; }
+    if (other.isTrampoline && jumpCooldown <= 0) { playerBody.velocity.y = 26 * Math.sqrt(playerScale); jumpCooldown = 0.2; }
     else if (other.isMedkit && _0xV.getHp() < 100) {
       updateStatsUI(_0xV.getHp() + 50);
       if (isConnected) sendPacket({ type: 'healSelf', amount: 50 });
@@ -1305,7 +1592,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   function tryJump() {
     if (drivingCar || isShatteredLocal || jumpCooldown > 0) return;
     if (_0xV.getFly() || isBodyGrounded(playerBody)) {
-      playerBody.velocity.y = 13 * (_0xV.getSpd() > 1 ? 1.2 : 1);
+      playerBody.velocity.y = 13 * Math.sqrt(playerScale) * (_0xV.getSpd() > 1 ? 1.2 : 1);
       jumpCooldown = 0.18;
     }
   }
@@ -1313,7 +1600,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   let marbleMode = false;
   const marbleMat = new CANNON.Material('marble');
   world.addContactMaterial(new CANNON.ContactMaterial(marbleMat, pm, { friction: 0.8, restitution: 0.25 }));
-  const marbleGeo = new THREE.SphereGeometry(playerRadius, 32, 24);
+  const marbleGeo = new THREE.SphereGeometry(BASE_PLAYER_RADIUS, 32, 24);
   function makeMarbleMat(color) {
     const c = _d.createElement('canvas'); c.width = 256; c.height = 128;
     const x = c.getContext('2d');
@@ -1324,9 +1611,9 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   marbleMesh.castShadow = true; marbleMesh.visible = false; scene.add(marbleMesh);
   function setLocalMarbleColor() { marbleMesh.material.map.dispose(); marbleMesh.material.dispose(); marbleMesh.material = makeMarbleMat(myColor); }
   function applyCameraRig() {
-    if (marbleMode) { camera.position.set(0, 1.5, 7); pitchObj.position.set(0, 0.3, 0); }
-    else if (thirdPerson) { camera.position.set(0, 1.1, 4.8); pitchObj.position.set(0, 1.35, 0); }
-    else { camera.position.set(0, 0, 0); pitchObj.position.set(0, 1.25, 0); }
+    if (marbleMode) { camera.position.set(0, 1.5 * playerScale, 7 * playerScale); pitchObj.position.set(0, 0.3 * playerScale, 0); }
+    else if (thirdPerson) { camera.position.set(0, 1.1 * playerScale, 4.8 * playerScale); pitchObj.position.set(0, 1.35 * playerScale, 0); }
+    else { camera.position.set(0, 0, 0); pitchObj.position.set(0, 1.25 * playerScale, 0); }
   }
   function setMarble(on) {
     if (on === marbleMode) return;
@@ -1375,6 +1662,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
     const car = {
       id, color, group, model, portalClone, chassisMesh, wheels, body, vehicle: null, driverId: null, steer: 0, wheelSpin: 0,
+      scaleFactor: 1.0,
       portalCd: 0,
       tp: new THREE.Vector3().copy(body.position), tq: new THREE.Quaternion(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w),
       prev: new THREE.Vector3().copy(body.position)
@@ -1386,12 +1674,13 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   function makeVehicle(car) {
     const v = new CANNON.RaycastVehicle({ chassisBody: car.body, indexRightAxis: 0, indexUpAxis: 1, indexForwardAxis: 2 });
     const o = {
-      radius: 0.55, directionLocal: new CANNON.Vec3(0, -1, 0), axleLocal: new CANNON.Vec3(-1, 0, 0),
-      suspensionStiffness: 35, suspensionRestLength: 0.35, maxSuspensionTravel: 0.3, maxSuspensionForce: 100000,
+      radius: 0.55 * (car.scaleFactor || 1), directionLocal: new CANNON.Vec3(0, -1, 0), axleLocal: new CANNON.Vec3(-1, 0, 0),
+      suspensionStiffness: 35, suspensionRestLength: 0.35 * (car.scaleFactor || 1), maxSuspensionTravel: 0.3 * (car.scaleFactor || 1), maxSuspensionForce: 100000,
       frictionSlip: 3, dampingRelaxation: 2.3, dampingCompression: 4.4, rollInfluence: 0.01,
       customSlidingRotationalSpeed: -30, useCustomSlidingRotationalSpeed: true, chassisConnectionPointLocal: new CANNON.Vec3()
     };
-    [[-1.35, -0.3, -1.5], [1.35, -0.3, -1.5], [-1.35, -0.3, 1.5], [1.35, -0.3, 1.5]].forEach((p) => { o.chassisConnectionPointLocal.set(...p); v.addWheel(o); });
+    const sf = car.scaleFactor || 1;
+    [[-1.35 * sf, -0.3 * sf, -1.5 * sf], [1.35 * sf, -0.3 * sf, -1.5 * sf], [-1.35 * sf, -0.3 * sf, 1.5 * sf], [1.35 * sf, -0.3 * sf, 1.5 * sf]].forEach((p) => { o.chassisConnectionPointLocal.set(...p); v.addWheel(o); });
     v.addToWorld(world); return v;
   }
 
@@ -1406,7 +1695,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   });
 
   function findNearestAvailableCar() {
-    let best = null, min = 6;
+    let best = null, min = 6 * Math.max(1, playerScale);
     for (const id in activeCars) {
       const c = activeCars[id];
       if (c.driverId && c.driverId !== _uid) continue;
@@ -1424,7 +1713,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     b.type = CANNON.Body.DYNAMIC; b.mass = 150; b.updateMassProperties();
     b.velocity.set(0, 0, 0); b.angularVelocity.set(0, 0, 0);
     car.vehicle = makeVehicle(car);
-    camera.position.set(0, 0, 0); pitchObj.position.set(0, 2.5, 2.2);
+    camera.position.set(0, 0, 0); pitchObj.position.set(0, 2.5 * (car.scaleFactor || 1), 2.2 * (car.scaleFactor || 1));
     sendCarState(car); syncPlayerState(true);
   }
   function exitCar() {
@@ -1436,7 +1725,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     b.velocity.set(0, 0, 0); b.angularVelocity.set(0, 0, 0); syncBodyAABB(b);
     car.tp.copy(b.position); car.tq.set(b.quaternion.x, b.quaternion.y, b.quaternion.z, b.quaternion.w);
     car.driverId = null; drivingCar = null;
-    playerBody.position.set(b.position.x - 2.8, b.position.y + 0.5, b.position.z);
+    playerBody.position.set(b.position.x - 2.8 * (car.scaleFactor || 1), b.position.y + 0.5, b.position.z);
     playerBody.velocity.set(0, 0, 0);
     world.addBody(playerBody); applyCameraRig();
     sendCarState(car); syncPlayerState(true);
@@ -1518,7 +1807,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   function selectObjectType(type) {
     if (!PROP_TYPES[type]) return;
     selectedObj = type; ghostMesh.geometry = propGeo(type);
-    $('hudSelectedObj').textContent = `${PROP_TYPES[type].i} ${PROP_TYPES[type].l}`;
     _d.querySelectorAll('.obj-card').forEach((el) => el.classList.toggle('active', el.dataset.type === type));
   }
   function rotateSelectedObject() { buildYawStep = (buildYawStep + 1) % 8; }
@@ -1568,9 +1856,33 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     body.quaternion.set(mesh.quaternion.x, mesh.quaternion.y, mesh.quaternion.z, mesh.quaternion.w);
     syncBodyAABB(body); world.addBody(body);
 
-    const boundR = t.s === 'ball' ? t.r : Math.max(t.h[0], t.h[1], t.h[2]);
-    const p = { id, propType: type, mesh, portalClone, boundR, body, isStatic, portalCd: 0 };
+    const baseBoundR = t.s === 'ball' ? t.r : Math.max(t.h[0], t.h[1], t.h[2]);
+    const p = { id, propType: type, mesh, portalClone, baseBoundR, boundR: baseBoundR, scaleFactor: 1.0, body, isStatic, portalCd: 0 };
     activeProps[id] = p; return p;
+  }
+
+  // EŞYALARIN PORTALDAN GEÇERKEN BÜYÜYÜP KÜÇÜLMESİNİ UYGULAYAN FONKSİYON
+  function applyPropScaleFactor(p, newFactor) {
+    if (!p || p.isStatic) return;
+    const sf = Math.max(0.25, Math.min(4.5, newFactor));
+    p.scaleFactor = sf;
+    const t = PROP_TYPES[p.propType];
+    p.mesh.scale.set(sf, sf, sf);
+    if (p.portalClone) p.portalClone.scale.set(sf, sf, sf);
+    p.boundR = p.baseBoundR * sf;
+
+    if (p.body && p.body.shapes[0]) {
+      if (t.s === 'ball') {
+        p.body.shapes[0].radius = t.r * sf;
+        p.body.shapes[0].updateBoundingSphereRadius();
+      } else {
+        p.body.shapes[0].halfExtents.set(t.h[0] * sf, t.h[1] * sf, t.h[2] * sf);
+        p.body.shapes[0].updateConvexPolyhedronRepresentation();
+        p.body.shapes[0].updateBoundingSphereRadius();
+      }
+      p.body.updateBoundingRadius();
+      p.body.computeAABB();
+    }
   }
 
   function applyControlledPush(body, fx, fy, fz) {
@@ -1758,8 +2070,16 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
           for (const ownerId in msg.portalsByPlayer) {
             const pPair = msg.portalsByPlayer[ownerId];
             const localPair = getOrCreatePlayerPortalPair(ownerId);
-            if (pPair.blue) applyPortalTransform(localPair.blue, pPair.blue.x, pPair.blue.y, pPair.blue.z, pPair.blue.nx, pPair.blue.ny, pPair.blue.nz, pPair.blue.wallIdx ?? -1, null, pPair.blue.scale || 1.5);
-            if (pPair.orange) applyPortalTransform(localPair.orange, pPair.orange.x, pPair.orange.y, pPair.orange.z, pPair.orange.nx, pPair.orange.ny, pPair.orange.nz, pPair.orange.wallIdx ?? -1, null, pPair.orange.scale || 1.5);
+            if (pPair.blue) {
+              const bx = pPair.blue.scaleX || pPair.blue.scale || 1.5;
+              const by = pPair.blue.scaleY || pPair.blue.scale || 1.5;
+              applyPortalTransform(localPair.blue, pPair.blue.x, pPair.blue.y, pPair.blue.z, pPair.blue.nx, pPair.blue.ny, pPair.blue.nz, pPair.blue.wallIdx ?? -1, null, bx, by);
+            }
+            if (pPair.orange) {
+              const ox = pPair.orange.scaleX || pPair.orange.scale || 1.5;
+              const oy = pPair.orange.scaleY || pPair.orange.scale || 1.5;
+              applyPortalTransform(localPair.orange, pPair.orange.x, pPair.orange.y, pPair.orange.z, pPair.orange.nx, pPair.orange.ny, pPair.orange.nz, pPair.orange.wallIdx ?? -1, null, ox, oy);
+            }
           }
         }
         break;
@@ -1768,11 +2088,20 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         const owner = msg.ownerId || _uid;
         const pair = getOrCreatePlayerPortalPair(owner);
         const targetP = msg.isOrange ? pair.orange : pair.blue;
-        applyPortalTransform(targetP, msg.x, msg.y, msg.z, msg.nx, msg.ny, msg.nz, msg.wallIdx ?? -1, null, msg.scale || 1.5);
+        const sx = msg.scaleX || msg.scale || 1.5;
+        const sy = msg.scaleY || msg.scale || 1.5;
+        applyPortalTransform(targetP, msg.x, msg.y, msg.z, msg.nx, msg.ny, msg.nz, msg.wallIdx ?? -1, null, sx, sy);
         break;
       }
       case 'portalScale': {
-        if (msg.scale && msg.ownerId) setPortalScaleValue(msg.scale, false, msg.ownerId);
+        if (msg.scale && msg.ownerId) {
+          const pair = getOrCreatePlayerPortalPair(msg.ownerId);
+          [pair.blue, pair.orange].forEach((p) => {
+            p.scaleX = msg.scale; p.scaleY = msg.scale; p.scale = msg.scale;
+            p.group.scale.set(msg.scale, msg.scale, 1.0);
+            p.group.updateMatrixWorld();
+          });
+        }
         break;
       }
       case 'teleportProp': {
@@ -1875,7 +2204,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     hitMesh.position.y = 1.3; hitMesh.userData = { isPlayer: true, playerId: id }; group.add(hitMesh);
     scene.add(group); intersectableObjects.push(hitMesh);
     const kb = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC, material: pm });
-    kb.addShape(new CANNON.Sphere(playerRadius)); kb.position.set(0, -500, 0); world.addBody(kb);
+    kb.addShape(new CANNON.Sphere(BASE_PLAYER_RADIUS)); kb.position.set(0, -500, 0); world.addBody(kb);
     const marbleM = new THREE.Mesh(marbleGeo, makeMarbleMat(colorHex)); marbleM.castShadow = true; marbleM.visible = false; scene.add(marbleM);
     return {
       id, body: kb, driving: false, group, rig, np, hitMesh, marbleMesh: marbleM,
@@ -1895,10 +2224,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const newHp = d.hp !== undefined ? d.hp : 100;
     const newAdm = !!d.isAdmin;
     if (newHp !== rp.hp || newAdm !== rp.isAdmin) {
-      rp.hp = newHp; rp.isAdmin = newAdm; drawNameplate(rp.np, d.id, rp.hp, rp.isAdmin);
+      rp.hp = newHp; rp.isAdmin = newAdm; drawNameplate(np, d.id, rp.hp, rp.isAdmin);
       if (adminModal.style.display === 'block') renderAdminModal();
     }
-    rp.targetPos.set(d.x, d.y - playerRadius, d.z); rp.targetRotY = d.yaw || 0;
+    rp.targetPos.set(d.x, d.y - BASE_PLAYER_RADIUS, d.z); rp.targetRotY = d.yaw || 0;
     rp.isShattered = !!d.isShattered;
     const m = !!d.marble; rp.driving = !!d.driving;
     if (d.mq) rp.mq.set(d.mq[0], d.mq[1], d.mq[2], d.mq[3]);
@@ -2047,17 +2376,17 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     for (const k in RAG_DEFS) {
       const [sz, o, m] = RAG_DEFS[k];
       const partMat = mat.clone();
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(sz[0], sz[1], sz[2]), partMat);
-      const cloneMesh = new THREE.Mesh(new THREE.BoxGeometry(sz[0], sz[1], sz[2]), partMat.clone());
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(sz[0] * playerScale, sz[1] * playerScale, sz[2] * playerScale), partMat);
+      const cloneMesh = new THREE.Mesh(new THREE.BoxGeometry(sz[0] * playerScale, sz[1] * playerScale, sz[2] * playerScale), partMat.clone());
       cloneMesh.visible = false;
       scene.add(mesh, cloneMesh);
       const body = new CANNON.Body({ mass: m, material: pm, linearDamping: 0.15, angularDamping: 0.5, allowSleep: false });
-      body.addShape(new CANNON.Box(new CANNON.Vec3(sz[0] / 2, sz[1] / 2, sz[2] / 2)));
-      body.position.set(base.x + o[0] * cy + o[2] * sy, base.y + o[1], base.z - o[0] * sy + o[2] * cy);
+      body.addShape(new CANNON.Box(new CANNON.Vec3((sz[0] * playerScale) / 2, (sz[1] * playerScale) / 2, (sz[2] * playerScale) / 2)));
+      body.position.set(base.x + (o[0] * cy + o[2] * sy) * playerScale, base.y + o[1] * playerScale, base.z + (-o[0] * sy + o[2] * cy) * playerScale);
       body.velocity.set(dir.x * 14 + (extra ? extra.x : 0), dir.y * 6 + 4 + (extra ? extra.y : 0), dir.z * 14 + (extra ? extra.z : 0));
       world.addBody(body); P[k] = body; parts.push({ mesh, cloneMesh, body });
     }
-    const V = (a, b, c) => new CANNON.Vec3(a, b, c);
+    const V = (a, b, c) => new CANNON.Vec3(a * playerScale, b * playerScale, c * playerScale);
     const cons = [
       new CANNON.PointToPointConstraint(P.torso, V(0, 0.45, 0), P.head, V(0, -0.35, 0)),
       new CANNON.PointToPointConstraint(P.torso, V(-0.75, 0.35, 0), P.armL, V(0, 0.45, 0)),
@@ -2083,7 +2412,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     isShatteredLocal = true; ragdollStart = Date.now();
     const p = playerBody.position;
     localRagdoll = spawnRagdoll({ x: p.x, y: p.y - playerRadius, z: p.z }, yawObj.rotation.y, myColor, dir, Infinity, extra);
-    world.removeBody(playerBody); camera.position.set(0, 1.5, 6); pitchObj.position.set(0, 0.5, 0);
+    world.removeBody(playerBody); camera.position.set(0, 1.5 * playerScale, 6 * playerScale); pitchObj.position.set(0, 0.5 * playerScale, 0);
     syncPlayerState(true); if (autoRespawn) ragdollTimer = setTimeout(() => endLocalRagdoll(true), 4000);
   }
   function endLocalRagdoll(atSpawn) {
@@ -2092,8 +2421,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const tx = t ? t.x : 0, ty = t ? t.y : 0, tz = t ? t.z : 0;
     if (localRagdoll) { removeRagdoll(localRagdoll); localRagdoll = null; }
     isShatteredLocal = false;
-    if (atSpawn || !t) { playerBody.position.set(0, 15, 8); updateStatsUI(100, 50, 100); if (isConnected) sendPacket({ type: 'healSelf', amount: 100 }); }
-    else playerBody.position.set(tx, ty + 1.2, tz);
+    if (atSpawn || !t) { setPlayerScaleFactor(1.0); playerBody.position.set(0, 15, 8); updateStatsUI(100, 50, 100); if (isConnected) sendPacket({ type: 'healSelf', amount: 100 }); }
+    else playerBody.position.set(tx, ty + 1.2 * playerScale, tz);
     playerBody.velocity.set(0, 0, 0); playerBody.angularVelocity.set(0, 0, 0);
     world.addBody(playerBody); applyCameraRig(); syncPlayerState(true);
   }
@@ -2117,11 +2446,19 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     if (grabbedProp) {
       grabDistance = Math.max(2.2, Math.min(18, grabDistance - Math.sign(e.deltaY) * 0.9));
     } else if (FINGER_MODES[fingerModeIdx].id === 'portal') {
-      setPortalScaleValue(currentPortalScale - Math.sign(e.deltaY) * 0.15, true, _uid);
+      const delta = -Math.sign(e.deltaY) * 0.15;
+      if (e.shiftKey) {
+        orangeScaleX = Math.max(0.4, Math.min(5.0, orangeScaleX + delta));
+        orangeScaleY = Math.max(0.4, Math.min(5.0, orangeScaleY + delta));
+      } else {
+        blueScaleX = Math.max(0.4, Math.min(5.0, blueScaleX + delta));
+        blueScaleY = Math.max(0.4, Math.min(5.0, blueScaleY + delta));
+      }
+      syncMyPortalDimensions(true);
     }
   });
   _d.addEventListener('mousedown', (e) => {
-    if (!isPlaying || isShatteredLocal || mobileMode || settingsModal.style.display === 'block' || keybindsModal.style.display === 'block' || adminModal.style.display === 'block' || buildMenu.style.display === 'block' || e.target.closest('.ui-btn,#vehiclePrompt,#chatContainer,#mobileControls,#buildMenu,#keybindsModal,#adminModal')) return;
+    if (!isPlaying || isShatteredLocal || mobileMode || settingsModal.style.display === 'block' || keybindsModal.style.display === 'block' || adminModal.style.display === 'block' || portalConfigModal.style.display === 'block' || buildMenu.style.display === 'block' || e.target.closest('.ui-btn,#vehiclePrompt,#chatContainer,#mobileControls,#buildMenu,#keybindsModal,#adminModal,#portalConfigModal,#scaleBadge')) return;
     if (!mouseLocked) _d.body.requestPointerLock();
     else if (e.button === 0) fireRaycast();
     else if (e.button === 2) triggerSecondaryAction();
@@ -2138,7 +2475,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     }
     if (!isPlaying) return;
     if (e.key === 'Enter') {
-      if (_d.activeElement === chatInput) { sendChat(); chatInput.blur(); if (!mobileMode && innerWidth > 768 && settingsModal.style.display !== 'block' && adminModal.style.display !== 'block') _d.body.requestPointerLock(); }
+      if (_d.activeElement === chatInput) { sendChat(); chatInput.blur(); if (!mobileMode && innerWidth > 768 && settingsModal.style.display !== 'block' && adminModal.style.display !== 'block' && portalConfigModal.style.display !== 'block') _d.body.requestPointerLock(); }
       else { if (mouseLocked) _d.exitPointerLock(); chatInput.focus(); } return;
     }
     if (['chatInput', 'admAnnounceInput', 'startAdminPassInput'].includes(_d.activeElement?.id)) return;
@@ -2204,7 +2541,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   };
   leftZone.addEventListener('touchend', resetJoy); leftZone.addEventListener('touchcancel', resetJoy);
 
-  // Masaüstünde Mobil Mod açıkken fareyle de joystick kullanılabilsin
   leftZone.addEventListener('mousedown', (e) => {
     e.preventDefault(); leftMouseActive = true;
     const r = leftZone.getBoundingClientRect(); leftCenter = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
@@ -2259,7 +2595,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   bindMobileActionBtn('carBtnMobile', handleInteractKey);
   bindMobileActionBtn('ragBtnMobile', toggleRagdoll);
   bindMobileActionBtn('weaponSwitchMobile', cycleFingerMode);
-  bindMobileActionBtn('portalSizeMobile', cycleMyPortalScale);
+  bindMobileActionBtn('portalSizeMobile', togglePortalConfigModal);
   bindMobileActionBtn('spawnBtnMobile', () => spawnObject(selectedObj));
 
   _w.addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
@@ -2267,30 +2603,43 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   const clock = new THREE.Clock();
   let frames = 0, fpsTimer = 0;
 
+  // ELİPTİK (X ve Y AYRI) PORTAL AÇIKLIĞI KONTROLÜ
   function isInsidePortalAperture(pt, portal, radiusPad = 0.75) {
     if (!portal || !portal.active) return false;
-    const sc = portal.scale || 1.0;
+    const sx = portal.scaleX || portal.scale || 1.5;
+    const sy = portal.scaleY || portal.scale || 1.5;
+    const maxS = Math.max(sx, sy);
     const rel = pt.clone().sub(portal.pos);
     const normalDist = Math.abs(rel.dot(portal.normal));
-    const tangentDistSq = Math.max(0, rel.lengthSq() - normalDist * normalDist);
-    return normalDist < (1.55 * sc + radiusPad) && Math.sqrt(tangentDistSq) < (1.65 * sc + radiusPad * 0.5);
+    if (normalDist >= 1.55 * maxS + radiusPad) return false;
+
+    const localPt = rel.clone().applyQuaternion(portal.group.quaternion.clone().invert());
+    const rx = 1.45 * sx + radiusPad * 0.5;
+    const ry = 2.05 * sy + radiusPad * 0.5;
+    const normEllipse = (localPt.x * localPt.x) / (rx * rx) + (localPt.y * localPt.y) / (ry * ry);
+    return normEllipse <= 1.0;
   }
 
+  // OYUNCU PORTALDAN GEÇERKEN BÜYÜME / KÜÇÜLME VE IŞINLANMA
   function seamlessTeleportPlayer(srcPortal, dstPortal) {
+    const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
+    setPlayerScaleFactor(playerScale * scaleRatio);
+
     const curPos = new THREE.Vector3(playerBody.position.x, playerBody.position.y, playerBody.position.z);
     const newPos = transformPointBetweenPortals(curPos, srcPortal, dstPortal);
 
     const relFromDst = newPos.clone().sub(dstPortal.pos);
     const nDist = relFromDst.dot(dstPortal.normal);
-    if (nDist < 0.55) {
-      newPos.addScaledVector(dstPortal.normal, 0.55 - nDist);
+    const minClearance = Math.max(0.55, playerRadius * 0.85);
+    if (nDist < minClearance) {
+      newPos.addScaledVector(dstPortal.normal, minClearance - nDist);
     }
 
     playerBody.position.set(newPos.x, newPos.y, newPos.z);
     playerObj.position.copy(playerBody.position);
 
     const curVel = new THREE.Vector3(playerBody.velocity.x, playerBody.velocity.y, playerBody.velocity.z);
-    const outVel = transformVecBetweenPortals(curVel, srcPortal, dstPortal);
+    const outVel = transformVecBetweenPortals(curVel, srcPortal, dstPortal).multiplyScalar(Math.max(0.65, Math.min(1.8, scaleRatio)));
     const minOutSpd = Math.max(8, curVel.length());
     if (outVel.dot(dstPortal.normal) < 4) {
       outVel.addScaledVector(dstPortal.normal, minOutSpd * 0.6);
@@ -2307,8 +2656,12 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     syncPlayerState(true, true);
   }
 
+  // EŞYALAR PORTALDAN GEÇERKEN BÜYÜME / KÜÇÜLME VE IŞINLANMA
   function seamlessTeleportProp(p, srcPortal, dstPortal) {
     if (grabbedProp === p) grabbedProp = null;
+    const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
+    applyPropScaleFactor(p, (p.scaleFactor || 1.0) * scaleRatio);
+
     const b = p.body;
     const curPos = new THREE.Vector3(b.position.x, b.position.y, b.position.z);
     const outPos = transformPointBetweenPortals(curPos, srcPortal, dstPortal);
@@ -2344,14 +2697,21 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     }
   }
 
+  // ARABALAR PORTALDAN GEÇERKEN BÜYÜME / KÜÇÜLME VE IŞINLANMA
   function seamlessTeleportCar(car, srcPortal, dstPortal) {
+    const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
+    car.scaleFactor = Math.max(0.4, Math.min(3.0, (car.scaleFactor || 1.0) * scaleRatio));
+    car.group.scale.set(car.scaleFactor, car.scaleFactor, car.scaleFactor);
+    car.portalClone.scale.set(car.scaleFactor, car.scaleFactor, car.scaleFactor);
+
     const b = car.body;
     const curPos = new THREE.Vector3(b.position.x, b.position.y, b.position.z);
     const outPos = transformPointBetweenPortals(curPos, srcPortal, dstPortal);
     const relFromDst = outPos.clone().sub(dstPortal.pos);
     const nDist = relFromDst.dot(dstPortal.normal);
-    if (nDist < 2.8) {
-      outPos.addScaledVector(dstPortal.normal, 2.8 - nDist);
+    const pad = 2.8 * car.scaleFactor;
+    if (nDist < pad) {
+      outPos.addScaledVector(dstPortal.normal, pad - nDist);
     }
 
     const inVel = new THREE.Vector3(b.velocity.x, b.velocity.y, b.velocity.z);
@@ -2362,7 +2722,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     const outQ = transformQuatBetweenPortals(curQ, srcPortal, dstPortal);
 
     b.wakeUp();
-    b.position.set(outPos.x, Math.max(CAR_Y, outPos.y), outPos.z);
+    b.position.set(outPos.x, Math.max(CAR_Y * car.scaleFactor, outPos.y), outPos.z);
     b.velocity.set(outVel.x, outVel.y, outVel.z);
     b.angularVelocity.set(0, 0, 0);
     b.quaternion.set(outQ.x, outQ.y, outQ.z, outQ.w);
@@ -2373,6 +2733,8 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     car.portalCd = 0.45;
 
     if (drivingCar === car) {
+      setPlayerScaleFactor(playerScale * scaleRatio);
+      pitchObj.position.set(0, 2.5 * car.scaleFactor, 2.2 * car.scaleFactor);
       const lookDir = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), yawObj.rotation.y);
       const newLookDir = transformVecBetweenPortals(lookDir, srcPortal, dstPortal);
       if (Math.hypot(newLookDir.x, newLookDir.z) > 0.01) {
@@ -2392,6 +2754,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
   }
 
   function seamlessTeleportRagdoll(rag, srcPortal, dstPortal) {
+    const scaleRatio = getPortalEffectiveScale(dstPortal) / getPortalEffectiveScale(srcPortal);
+    if (rag === localRagdoll) {
+      setPlayerScaleFactor(playerScale * scaleRatio);
+    }
     const torsoPos = new THREE.Vector3(rag.torso.position.x, rag.torso.position.y, rag.torso.position.z);
     const outTorsoPos = transformPointBetweenPortals(torsoPos, srcPortal, dstPortal);
     const relFromDst = outTorsoPos.clone().sub(dstPortal.pos);
@@ -2401,10 +2767,12 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     }
 
     rag.parts.forEach((p) => {
+      p.mesh.scale.multiplyScalar(scaleRatio);
+      if (p.cloneMesh) p.cloneMesh.scale.copy(p.mesh.scale);
       const partOffset = new THREE.Vector3(
-        p.body.position.x - torsoPos.x,
-        p.body.position.y - torsoPos.y,
-        p.body.position.z - torsoPos.z
+        (p.body.position.x - torsoPos.x) * scaleRatio,
+        (p.body.position.y - torsoPos.y) * scaleRatio,
+        (p.body.position.z - torsoPos.z) * scaleRatio
       );
       const rotOffset = transformVecBetweenPortals(partOffset, srcPortal, dstPortal);
       p.body.position.set(
@@ -2445,14 +2813,14 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       if (!pk.active) return;
       pk.model.rotation.y += dt * 1.6;
       pk.model.position.y = pk.y + 1.15 + Math.sin(clock.elapsedTime * 2.8) * 0.16;
-      if (isPlaying && !isShatteredLocal && playerBody.position.distanceTo(pk.model.position) < 2.3) {
+      if (isPlaying && !isShatteredLocal && playerBody.position.distanceTo(pk.model.position) < 2.3 * Math.max(1, playerScale)) {
         collectPickupItem(pk);
       }
     });
 
     if (grabbedProp && grabbedProp.body && !grabbedProp.isStatic) {
       const aim = new THREE.Vector3(); camera.getWorldDirection(aim);
-      const holdPos = new THREE.Vector3(playerBody.position.x, playerBody.position.y + 0.9, playerBody.position.z).addScaledVector(aim, grabDistance);
+      const holdPos = new THREE.Vector3(playerBody.position.x, playerBody.position.y + 0.9 * playerScale, playerBody.position.z).addScaledVector(aim, grabDistance);
       grabbedProp.body.wakeUp();
       grabbedProp.body.velocity.set(
         (holdPos.x - grabbedProp.body.position.x) * 12,
@@ -2492,7 +2860,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
     if (isPlaying && !isShatteredLocal && !drivingCar && !marbleMode) {
       if (activeActions.jump) tryJump();
       if (_0xV.getFly() && !activeActions.jump) playerBody.velocity.y = 0;
-      const spdM = _0xV.getSpd();
+      const spdM = _0xV.getSpd() * Math.max(0.65, Math.min(1.6, Math.sqrt(playerScale)));
       const mv = new THREE.Vector3(-steer, 0, -throttle);
       if (mv.lengthSq() > 0) {
         mv.normalize();
@@ -2508,7 +2876,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       playerBody.velocity.z += (targetVz - playerBody.velocity.z) * accel;
     }
 
-    // DUVAR PHASING: Haritadaki herhangi bir oyuncunun aktif portal çiftinin ağzındayken duvar çarpışmasını kapat
     staticMapEntries.forEach((entry) => { entry.body.collisionResponse = true; });
     for (const id in activeProps) {
       if (activeProps[id].body) activeProps[id].body.collisionResponse = true;
@@ -2528,7 +2895,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         if (!inMouth) {
           for (const cid in activeCars) {
             const cPos = new THREE.Vector3(activeCars[cid].body.position.x, activeCars[cid].body.position.y, activeCars[cid].body.position.z);
-            if (isInsidePortalAperture(cPos, portal, 2.6)) { inMouth = true; break; }
+            if (isInsidePortalAperture(cPos, portal, 2.6 * (activeCars[cid].scaleFactor || 1))) { inMouth = true; break; }
           }
         }
         if (!inMouth) {
@@ -2553,7 +2920,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
     world.step(1 / 60, dt, 3);
 
-    // RAGDOLL GÜNCELLEME + TÜM OYUNCULARIN PORTALLARINDAN GEÇİŞ KONTROLÜ
     for (let i = ragdolls.length - 1; i >= 0; i--) {
       const r = ragdolls[i];
       if (r.portalCd > 0) r.portalCd -= dt;
@@ -2609,7 +2975,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
         localRig.root.rotation.y = yawObj.rotation.y;
         animateHumanoidRig(localRig, moveSpd, dt, true);
 
-        // OYUNCU PORTAL GEÇİŞ KONTROLÜ (Kendi veya Başka Oyuncunun Aktif Portal Çifti)
         localPortalCloneRig.root.visible = false;
         setGroupClippingPlane(localRig.root, []);
 
@@ -2625,6 +2990,10 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
           setGroupClippingPlane(localRig.root, [nearP.clipPlane]);
           setGroupClippingPlane(localPortalCloneRig.root, [farP.clipPlane]);
+
+          const previewRatio = getPortalEffectiveScale(farP) / getPortalEffectiveScale(nearP);
+          const nextScale = Math.max(0.25, Math.min(4.5, playerScale * previewRatio));
+          localPortalCloneRig.root.scale.set(nextScale, nextScale, nextScale);
 
           const cloneFootPos = transformPointBetweenPortals(localRig.root.position, nearP, farP);
           localPortalCloneRig.root.position.copy(cloneFootPos);
@@ -2668,7 +3037,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       ghostMesh.position.set(tr.x, tr.y, tr.z); ghostMesh.quaternion.copy(tr.q); ghostMesh.visible = true;
     } else ghostMesh.visible = false;
 
-    // ARABALARIN TÜM PORTAL ÇİFTLERİNDEN GEÇİŞİ & YARI-KESİT KONTROLÜ
     for (const id in activeCars) {
       const c = activeCars[id];
       if (c.portalCd > 0) c.portalCd -= dt;
@@ -2679,12 +3047,16 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
       const cPos = c.group.position;
       const nearest = findClosestActivePortalPair(cPos);
-      if (nearest && isInsidePortalAperture(cPos, nearest.srcP, 2.5)) {
+      if (nearest && isInsidePortalAperture(cPos, nearest.srcP, 2.5 * (c.scaleFactor || 1))) {
         const { srcP, dstP } = nearest;
         const rel = cPos.clone().sub(srcP.pos);
         const normalDist = rel.dot(srcP.normal);
         const vel = new THREE.Vector3(c.body.velocity.x, c.body.velocity.y, c.body.velocity.z);
         const movingIn = vel.dot(srcP.normal) < -0.05;
+
+        const ratio = getPortalEffectiveScale(dstP) / getPortalEffectiveScale(srcP);
+        const previewCarScale = Math.max(0.4, Math.min(3.0, (c.scaleFactor || 1) * ratio));
+        c.portalClone.scale.set(previewCarScale, previewCarScale, previewCarScale);
 
         setGroupClippingPlane(c.group, [srcP.clipPlane]);
         setGroupClippingPlane(c.portalClone, [dstP.clipPlane]);
@@ -2698,7 +3070,6 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       }
     }
 
-    // NESNELERİN TÜM PORTAL ÇİFTLERİNDEN GEÇİŞİ VE YARI-KESİT KONTROLÜ
     for (const id in activeProps) {
       const p = activeProps[id]; if (p.isStatic) continue;
       if (p.portalCd > 0) p.portalCd -= dt;
@@ -2726,6 +3097,9 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
 
         p.mesh.material.clippingPlanes = [srcP.clipPlane];
         if (p.portalClone) {
+          const ratio = getPortalEffectiveScale(dstP) / getPortalEffectiveScale(srcP);
+          const previewScale = Math.max(0.25, Math.min(4.5, (p.scaleFactor || 1.0) * ratio));
+          p.portalClone.scale.set(previewScale, previewScale, previewScale);
           p.portalClone.material.clippingPlanes = [dstP.clipPlane];
           p.portalClone.position.copy(transformPointBetweenPortals(pos, srcP, dstP));
           p.portalClone.quaternion.copy(transformQuatBetweenPortals(p.mesh.quaternion, srcP, dstP));
@@ -2747,7 +3121,7 @@ body.mobile-mode #vehiclePrompt{bottom:185px;font-size:.78rem}
       const diff = rp.targetRotY - rp.group.rotation.y;
       rp.group.rotation.y += Math.atan2(Math.sin(diff), Math.cos(diff)) * 0.25;
       if (rp.driving) rp.body.position.set(0, -500, 0);
-      else rp.body.position.set(rp.group.position.x, rp.group.position.y + playerRadius, rp.group.position.z);
+      else rp.body.position.set(rp.group.position.x, rp.group.position.y + BASE_PLAYER_RADIUS, rp.group.position.z);
       syncBodyAABB(rp.body);
     }
 
